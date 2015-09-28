@@ -14,13 +14,20 @@ static char *video_mem;		/* Address to which VRAM is mapped */
 
 static unsigned scr_width;	/* Width of screen in columns */
 static unsigned scr_lines;	/* Height of screen in lines */
+#define BLK_WHITE 0x07
 
 void vt_fill(char ch, char attr) {
-  
-  /* To complete */
-  
+ char *vptr;
+ vptr = video_mem;
+ int i = 0, j = 0;
+  for(i; i < scr_lines; i++){
+   for(j; j < scr_width; j++){
+	   *vptr = ch;
+	    vptr++;
+	   *vptr = BLK_WHITE;
+   }
 }
-
+}
 void vt_blank() {
 
   /* To complete ... */
