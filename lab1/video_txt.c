@@ -25,6 +25,10 @@ void vt_fill(char ch, char attr) {
 		*vptr = ch;
 		  vptr++;
 		  *vptr = attr;
+
+
+
+
 }
 }
 
