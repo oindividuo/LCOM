@@ -25,10 +25,6 @@ void vt_fill(char ch, char attr) {
 		*vptr = ch;
 		  vptr++;
 		  *vptr = attr;
-
-
-
-
 }
 }
 
@@ -48,19 +44,29 @@ void vt_blank() {
 int vt_print_char(char ch, char attr, int r, int c) {
 	char *vptr;
 	vptr = video_mem;
-	vptr = vptr + r*c;
+	vptr = vptr + 2 * r * scr_width + 2 * c;
 	*vptr = ch;
 	vptr++;
 	*vptr = attr;
 
     return 0;
-
 }
 
 int vt_print_string(char *str, char attr, int r, int c) {
 
-  /* To complete ... */
+	char *str_ptr = str;
+		char *vptr;
+			vptr = video_mem;
+			vptr = vptr + 2 * r * scr_width + 2 * c;
 
+		for (; *str_ptr !=0; ++str_ptr, ++vptr)
+		{
+			*vptr = *str_ptr;
+			++vptr;
+			*vptr = attr;
+		}
+
+		return 0;
 }
 
 int vt_print_int(int num, char attr, int r, int c) {
