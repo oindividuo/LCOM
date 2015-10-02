@@ -102,8 +102,31 @@ int vt_print_int(int num, char attr, int r, int c) {
 
 int vt_draw_frame(int width, int height, char attr, int r, int c) {
 
-  /* To complete ... */
+	if(r+height >= scr_lines || c+width >= scr_width || r < 0 || c < 0 )
+						return 1;
 
+	else{
+	 int aux_width = width, aux_height = height;
+     vt_print_char(UL_CORNER, attr, r, c);
+     vt_print_char(LL_CORNER, attr, r+height-1, c);
+     vt_print_char(UR_CORNER, attr, r, c+width-1);
+     vt_print_char(LR_CORNER, attr, r+height-1, c+width-1);
+
+     int i = aux_width - 2;
+     for(i; i!=0; i--){
+    	 vt_print_char(HOR_BAR, attr, r, c+i);
+    	 vt_print_char(HOR_BAR, attr, r+height-1, c+i);
+    	 }
+
+     i = aux_height - 2;
+     for(i; i!=0; i--){
+         	 vt_print_char(VERT_BAR, attr, r+i, c);
+         	 vt_print_char(VERT_BAR, attr, r+i, c + width-1);
+         	 }
+
+
+     return 0;
+	}
 }
 
 /*
