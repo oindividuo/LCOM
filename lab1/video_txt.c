@@ -15,12 +15,10 @@ static char *video_mem;		/* Address to which VRAM is mapped */
 static unsigned scr_width;	/* Width of screen in columns */
 static unsigned scr_lines;	/* Height of screen in lines */
 
-#define BLK_WHITE 0x07
-
 void vt_fill(char ch, char attr) {
 	int i;
 	char *vptr;
-	vptr = video_mem;
+				vptr = video_mem;
 	for(i = 0; i< scr_width*scr_lines; i++, vptr++) {
 		*vptr = ch;
 		  vptr++;
@@ -30,21 +28,25 @@ void vt_fill(char ch, char attr) {
 
 
 void vt_blank() {
-
 	int i;
-		char *vptr;
-		vptr = video_mem;
+	char *vptr;
+				vptr = video_mem;
 		for(i = 0; i< scr_width*scr_lines; i++, vptr++) {
-			*vptr = ' ';
+			*vptr = 0x00;
 			  vptr++;
-			  *vptr = BLK_WHITE;
+			  *vptr = 0x00;
 	}
 }
 
 int vt_print_char(char ch, char attr, int r, int c) {
 	char *vptr;
-	vptr = video_mem;
+				vptr = video_mem;
+
 	vptr = vptr + 2 * r * scr_width + 2 * c;
+
+	if(r >= scr_lines || c >= scr_width || r < 0 || c < 0)
+		return 1;
+
 	*vptr = ch;
 	vptr++;
 	*vptr = attr;
@@ -59,6 +61,10 @@ int vt_print_string(char *str, char attr, int r, int c) {
 			vptr = video_mem;
 			vptr = vptr + 2 * r * scr_width + 2 * c;
 
+			if(r >= scr_lines || c >= scr_width || r < 0 || c < 0 )
+				return 1;
+
+
 		for (; *str_ptr !=0; ++str_ptr, ++vptr)
 		{
 			*vptr = *str_ptr;
@@ -71,8 +77,26 @@ int vt_print_string(char *str, char attr, int r, int c) {
 
 int vt_print_int(int num, char attr, int r, int c) {
 
-  /* To complete ... */
+	if(r >= scr_lines || c >= scr_width || r < 0 || c < 0 )
+					return 1;
+    int aux = num, count = 0;
+		char *vptr;
+			vptr = video_mem;
+			vptr = vptr + 2 * r * scr_width + 2 * c;
 
+	while(aux % 10 != 0){
+		count++;
+		aux = aux /10;
+	}
+
+	if(num < 0)
+	count = count+1;
+
+    char int_str[count];
+
+	sprintf(int_str, "%d", num);
+	vt_print_string(int_str, attr, r, c);
+	return 0;
 }
 
 
