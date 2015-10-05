@@ -1,7 +1,8 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
 
-int timer_set_square(unsigned long timer, unsigned long freq) {
+int timer_set_square(unsigned long timer, unsigned long freq)
+{
 
 	return 1;
 }
@@ -20,13 +21,25 @@ void timer_int_handler() {
 
 }
 
-int timer_get_conf(unsigned long timer, unsigned char *st) {
-	
+int timer_get_conf(unsigned long timer, unsigned char *st)
+{
+	switch(timer){
+	case 0:
+		sys_inb(TIMER_0, *st);
+		return 0;
+	case 1:
+		sys_inb(TIMER_1, *st);
+		return 0;
+	case 2:
+		sys_inb(TIMER_2, *st);
+		return 0;
+	}
 	return 1;
 }
 
-int timer_display_conf(unsigned char conf) {
-	
+int timer_display_conf(unsigned char conf)
+{
+
 	return 1;
 }
 
