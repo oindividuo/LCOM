@@ -102,7 +102,12 @@ int timer_test_int(unsigned long time) {
 	return 1;
 }
 
-int timer_test_config(unsigned long timer) {
-	
-	return 1;
+int timer_test_config(unsigned long timer)
+{
+	unsigned char *st;
+	if (timer_get_conf(timer, st) == 1)
+		return 1;
+	if (timer_display_conf(*st) == 1)
+		return 1;
+	return 0;
 }
