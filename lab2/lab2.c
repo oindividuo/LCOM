@@ -33,7 +33,7 @@ static void print_usage(char *argv[]) {
 
 static int proc_args(int argc, char *argv[]) {
 
-  unsigned long ch, row, col, attr, width, height;
+  unsigned long timer, freq, time;
   char *str;
   long num;
 
@@ -45,8 +45,8 @@ static int proc_args(int argc, char *argv[]) {
 	  }
 	  if( (timer = parse_ulong(argv[2], 16)) == ULONG_MAX )
 	  		  return 1;
-	  printf("timer:: timer_test_config()\n"); /* Actually, it was already invoked */
-	  config(timer);
+	  printf("timer:: timer_test_config()\n");
+	  timer_test_config(timer);
 	  return 0;
   } else if (strncmp(argv[1], "square", strlen("square")) == 0) {
 	  if( argc != 1 ) {
@@ -55,8 +55,7 @@ static int proc_args(int argc, char *argv[]) {
 	  }
 	  if( (square = parse_ulong(argv[2], 16)) == ULONG_MAX )
 		  return 1;
-	  printf("timer:: vt_fill()\n",
-			  (unsigned)ch, (unsigned)attr);
+	  printf("timer:: timer_test_square()\n");
 	  timer_test_square(square);
 	  return 0;
   } else if (strncmp(argv[1], "test_int", strlen("test_int")) == 0) {
@@ -66,9 +65,9 @@ static int proc_args(int argc, char *argv[]) {
 	  }
 	  if( (time = parse_ulong(argv[2], 16)) == ULONG_MAX )
 		  return 1;
-	  printf("video_txt:: vt_print_char(0x%X, 0x%X, %lu, %lu)\n",
-			  (unsigned)ch, (unsigned)attr, row, col);
-	  return timer_test_int(time);
+	  printf("timer:: timer_test_int()\n");
+	  timer_test_int(time);
+	  return 0;
   } else {
 	  printf("timer: non valid function \"%s\" to test\n", argv[1]);
 	  return 1;
@@ -88,7 +87,7 @@ static unsigned long parse_ulong(char *str, int base) {
   }
 
   if (endptr == str) {
-	  printf("video_txt: parse_ulong: no digits were found in %s \n", str);
+	  printf("timer: parse_ulong: no digits were found in %s \n", str);
 	  return ULONG_MAX;
   }
 
@@ -109,7 +108,7 @@ static long parse_long(char *str, int base) {
   }
 
   if (endptr == str) {
-	  printf("video_txt: parse_long: no digits were found in %s \n", str);
+	  printf("timer: parse_long: no digits were found in %s \n", str);
 	  return LONG_MAX;
   }
 
