@@ -1,6 +1,9 @@
 #include "timer.h"
 #include <stdio.h>
 
+static unsigned int time_counter = 0;
+static int hook_id;
+
 int timer_set_square(unsigned long timer, unsigned long freq)
 {
 	if(freq < 0)
@@ -36,22 +39,28 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 }
 
 int timer_subscribe_int(void ) {
-
-	return 1;
+	if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK) //output the EOI command to the PIC
+			return 1;
+	else if(sys_irqenable((&hook_id)) != OK) //enables interrupts on the IRQ line associated with the hook_id
+		return 1;
+	else return 0;
 }
 
 int timer_unsubscribe_int() {
+	if ((sys_irqrmpolicy(&hook_id) == OK) && (sys_irqdisable(&hook_id) == OK))
+		return 0;
 
-	return 1;
+	else return 1;
+
 }
 
 void timer_int_handler() {
-
+   time_counter++;
 }
 
 int timer_get_conf(unsigned long timer, unsigned char *st)
 {
-	sys_outb(TIMER_CTRL, TIMER_RB_CMD | TIMER_RB_COUNT_| TIMER_RB_SEL(timer) | TIMER_RB_STATUS_) ;
+	sys_outb(TIMER_CTRL, TIMER_RB_CMD | TIMER_RB_COUNT_| TIMER_RB_SEL(timer) | TIMER_RB_STATUS_) ; //Direct I/O port access
 	unsigned long int timer_config;
 	switch(timer){
 	case 0:
