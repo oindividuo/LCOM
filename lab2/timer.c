@@ -3,8 +3,21 @@
 
 int timer_set_square(unsigned long timer, unsigned long freq)
 {
+	if(freq < 0)
+		return 1;
 
-	return 1;
+	unsigned long frequency = TIMER_FREQ/freq // Timer_Freq is the frequency of the Clock input and freq is the value loaded initially in the timer
+	unsigned char out_port;
+	if(timer == 0){
+		out_port = TIMER_0;
+	}
+	else if(timer == 1){
+		out_port = TIMER_1;
+	}
+	else if(timer == 2){
+		out_port = TIMER_2;
+	}
+	else return 1;
 }
 
 int timer_subscribe_int(void ) {
@@ -70,8 +83,7 @@ int timer_display_conf(unsigned char conf)
 }
 
 int timer_test_square(unsigned long freq) {
-
-	return 1;
+	 return timer_set_square(timer, freq);
 }
 
 int timer_test_int(unsigned long time) {
