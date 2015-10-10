@@ -1,4 +1,5 @@
 #include <minix/drivers.h>
+#include <minix/syslib.h>
 
 #include "timer.h"
 
@@ -34,40 +35,35 @@ static void print_usage(char *argv[]) {
 static int proc_args(int argc, char *argv[]) {
 
   unsigned long timer, freq, time;
-  char *str;
-  long num;
 
   /* check the function to test: if the first characters match, accept it */
   if (strncmp(argv[1], "config", strlen("config")) == 0) {
-	  if( argc != 1 ) {
+	  if( argc != 3 ) {
 		  printf("timer: wrong no of arguments for test of timer_test_config() \n");
 		  return 1;
 	  }
-	  if( (timer = parse_ulong(argv[2], 16)) == ULONG_MAX )
+	  if( (timer = parse_ulong(argv[2], 10)) == ULONG_MAX )
 	  		  return 1;
-	  printf("timer:: timer_test_config()\n");
-	  timer_test_config(timer);
-	  return 0;
+	  printf("timer:: timer_test_config(%lu)\n", timer);
+	  return  timer_test_config(timer);
   } else if (strncmp(argv[1], "square", strlen("square")) == 0) {
-	  if( argc != 1 ) {
+	  if( argc != 3 ) {
 		  printf("timer: wrong no of arguments for test of timer_test_square() \n");
 		  return 1;
 	  }
-	  if( (square = parse_ulong(argv[2], 16)) == ULONG_MAX )
+	  if( (freq = parse_ulong(argv[2], 10)) == ULONG_MAX )
 		  return 1;
-	  printf("timer:: timer_test_square()\n");
-	  timer_test_square(square);
-	  return 0;
+	  printf("timer:: timer_test_square(%lu)\n", freq);
+	  return timer_test_square(freq);;
   } else if (strncmp(argv[1], "test_int", strlen("test_int")) == 0) {
-	  if( argc != 1 ) {
+	  if( argc != 3 ) {
 		  printf("timer: wrong no of arguments for test of timer_test_int() \n");
 		  return 1;
 	  }
-	  if( (time = parse_ulong(argv[2], 16)) == ULONG_MAX )
+	  if( (time = parse_ulong(argv[2], 10)) == ULONG_MAX )
 		  return 1;
-	  printf("timer:: timer_test_int()\n");
-	  timer_test_int(time);
-	  return 0;
+	  printf("timer:: timer_test_int(%lu)\n", time);
+	  return timer_test_int(time);;
   } else {
 	  printf("timer: non valid function \"%s\" to test\n", argv[1]);
 	  return 1;
