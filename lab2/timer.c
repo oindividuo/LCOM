@@ -1,23 +1,38 @@
 #include "timer.h"
-#include<stdio.h>
+#include <stdio.h>
 
 int timer_set_square(unsigned long timer, unsigned long freq)
 {
 	if(freq < 0)
 		return 1;
 
-	unsigned long frequency = TIMER_FREQ/freq // Timer_Freq is the frequency of the Clock input and freq is the value loaded initially in the timer
-	unsigned char out_port;
+	unsigned long frequency = TIMER_FREQ/freq; // Timer_Freq is the frequency of the Clock input and freq is the value loaded initially in the timer
+	unsigned char out_port = ' ', timer_control = ' ';
 	if(timer == 0){
+		timer_control = TIMER_SEL0;
 		out_port = TIMER_0;
 	}
 	else if(timer == 1){
+		timer_control = TIMER_SEL1;
 		out_port = TIMER_1;
 	}
 	else if(timer == 2){
+		timer_control = TIMER_SEL2;
 		out_port = TIMER_2;
 	}
+
 	else return 1;
+
+	unsigned char st;
+		if (timer_get_conf(timer, &st) != 0)
+			return 1;
+
+		if ((st & BIT(0)) == TIMER_BCD)
+			sys_outb(TIMER_CTRL, timer_control | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD);
+
+		else sys_outb(TIMER_CTRL, timer_control | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BIN );
+
+		return 0;
 }
 
 int timer_subscribe_int(void ) {
@@ -36,6 +51,7 @@ void timer_int_handler() {
 
 int timer_get_conf(unsigned long timer, unsigned char *st)
 {
+	sys_outb(TIMER_CTRL, TIMER_RB_CMD | TIMER_RB_COUNT_| TIMER_RB_SEL(timer) | TIMER_RB_STATUS_) ;
 	unsigned long int timer_config;
 	switch(timer){
 	case 0:
@@ -83,7 +99,7 @@ int timer_display_conf(unsigned char conf)
 }
 
 int timer_test_square(unsigned long freq) {
-	 return timer_set_square(timer, freq);
+	 return timer_set_square(0, freq);
 }
 
 int timer_test_int(unsigned long time) {
