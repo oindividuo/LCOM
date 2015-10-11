@@ -10,17 +10,17 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 		return 1;
 
 	unsigned long frequency = TIMER_FREQ/freq; // Timer_Freq is the frequency of the Clock input and freq is the value loaded initially in the timer
-	unsigned char out_port = ' ', timer_control = ' ';
+	unsigned char out_port = ' ', timer_selection = ' ';
 	if(timer == 0){
-		timer_control = TIMER_SEL0;
+		timer_selection = TIMER_SEL0;
 		out_port = TIMER_0;
 	}
 	else if(timer == 1){
-		timer_control = TIMER_SEL1;
+		timer_selection = TIMER_SEL1;
 		out_port = TIMER_1;
 	}
 	else if(timer == 2){
-		timer_control = TIMER_SEL2;
+		timer_selection = TIMER_SEL2;
 		out_port = TIMER_2;
 	}
 
@@ -31,9 +31,9 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 			return 1;
 
 		if ((st & BIT(0)) == TIMER_BCD)
-			sys_outb(TIMER_CTRL, timer_control | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD);
+			sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD);
 
-		else sys_outb(TIMER_CTRL, timer_control | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BIN );
+		else sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BIN );
 
 		return 0;
 }
@@ -113,6 +113,31 @@ int timer_test_square(unsigned long freq) {
 
 int timer_test_int(unsigned long time) {
 
+	 int ipc_status;
+	 int r;
+	 message msg;
+
+	while( 1 ) {  //Interrupt loop
+	     /* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+	    if ( r != 0 ) {
+	      printf("driver_receive failed with: %d", r);
+	        continue;
+	    }
+	    if (is_ipc_notify(ipc_status)) { /* received notification */
+	       switch (_ENDPOINT_P(msg.m_source)) {
+	           case HARDWARE: /* hardware interrupt notification */
+	              if (msg.NOTIFY_ARG & irq_set) { /* subscribed interrupt */
+	                    ...   /* process it */
+	              }
+	               break;
+	         default:
+	        break; /* no other notifications expected: do nothing */
+	   }
+	} else { /* received a standard message, not a notification */
+	     /* no standard messages expected: do nothing */
+	}
+	}
 	return 1;
 }
 
