@@ -30,19 +30,43 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 		if (timer_get_conf(timer, &st) != 0)
 			return 1;
 
-		if ((st & BIT(0)) == TIMER_BCD)
-			sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD);
+		unsigned char frequency_LSB = frequency & 0xFF;
+		unsigned char frequency_MSB = (frequency) >> 8;
 
-		else sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BIN );
+		if ((st & BIT(0)) == TIMER_BCD){
+			if(sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD) != OK)
+				return 1;
+			else {
+				if(sys_outb(out_port, (frequency) & 0xFF) != OK )
+					return 1;
+				else if (sys_outb(out_port, (frequency) >> 8) != OK )
+					return 1;
+				else return 0;
+			}
+			}
 
-		return 0;
+		else {
+			if(sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BIN) != OK)
+							return 1;
+			else {
+				if(sys_outb(out_port, (frequency) & 0xFF) != OK )
+					return 1;
+				else if (sys_outb(out_port, (frequency) >> 8) != OK )
+					return 1;
+				else return 0;
+					}
+			}
 }
 
 int timer_subscribe_int(void ) {
-	if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK) //output the EOI command to the PIC
-			return 1;
-	else if(sys_irqenable((&hook_id)) != OK) //enables interrupts on the IRQ line associated with the hook_id
+	if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK){ //output the EOI command to the PIC
+		printf("Irqsetpolicy failed \n");
 		return 1;
+	   	   }
+	else if(sys_irqenable((&hook_id)) != OK){ //enables interrupts on the IRQ line associated with the hook_id
+		printf("Irqenable failed \n");
+		return 1;
+		}
 	else return 0;
 }
 
@@ -88,10 +112,10 @@ int timer_display_conf(unsigned char conf)
 		printf("Binary Counter \n");
 
 	//bits 1, 2, e 3 - Operation mode
-		if(conf & ((BIT(1) | BIT(2)) | BIT(2)) == TIMER_RATE_GEN)
+		if(conf & (BIT(1) | BIT(2)) == TIMER_RATE_GEN)
 	printf("Mode 2: Rate generator \n");
 
-		else if(conf & ((BIT(1) | BIT(2)) | BIT(2)) == TIMER_SQR_WAVE)
+		else if(conf & (BIT(1) | BIT(2)) == TIMER_SQR_WAVE)
 			printf("Mode 3: Square wave generator \n");
 
 	else printf("Operation mode unnecessary for this class \n");
@@ -112,7 +136,7 @@ int timer_test_square(unsigned long freq) {
 }
 
 int timer_test_int(unsigned long time) {
-
+     int irq_set;
 	 int ipc_status;
 	 int r;
 	 message msg;
@@ -128,7 +152,7 @@ int timer_test_int(unsigned long time) {
 	       switch (_ENDPOINT_P(msg.m_source)) {
 	           case HARDWARE: /* hardware interrupt notification */
 	              if (msg.NOTIFY_ARG & irq_set) { /* subscribed interrupt */
-	                    ...   /* process it */
+	                      /* process it */
 	              }
 	               break;
 	         default:
@@ -136,7 +160,7 @@ int timer_test_int(unsigned long time) {
 	   }
 	} else { /* received a standard message, not a notification */
 	     /* no standard messages expected: do nothing */
-	}
+	       }
 	}
 	return 1;
 }
