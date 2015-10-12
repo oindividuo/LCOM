@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 static unsigned int time_counter = 0;
-static int hook_id;
+static int hook_id = 0;
 
 int timer_set_square(unsigned long timer, unsigned long freq)
 {
@@ -64,14 +64,16 @@ int timer_subscribe_int(void ) {
 		printf("Irqenable failed \n");
 		return 1;
 		}
-	else hook_id;
+	else return hook_id;
 }
 
 int timer_unsubscribe_int() {
-	if ((sys_irqrmpolicy(&hook_id) == OK) && (sys_irqdisable(&hook_id) == OK))
-		return 0;
+	if ((sys_irqrmpolicy(&hook_id) != OK))
+		return 1;
+		else if (sys_irqdisable(&hook_id) != OK)
+		return 1;
 
-	else return 1;
+	else return 0;
 
 }
 
@@ -137,9 +139,9 @@ int timer_test_int(unsigned long time) {
 	 int r;
 	 message msg;
 
-	 int loop_counter = 0; //loop iteration counter;
-     int irq_set = timer_subscribe_int();
-	while( loop_counter < time ) {  //Interrupt loop
+     int irq_set = 0;
+     irq_set = BIT(timer_subscribe_int()); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
+	while(time_counter < time) {  //Interrupt loop
 	     /* Get a request message. */
 		r = driver_receive(ANY, &msg, &ipc_status);
 	    if ( r != 0 ) {
@@ -149,8 +151,9 @@ int timer_test_int(unsigned long time) {
 	    if (is_ipc_notify(ipc_status)) { /* received notification */
 	       switch (_ENDPOINT_P(msg.m_source)) {
 	           case HARDWARE: /* hardware interrupt notification */
-	              if (msg.NOTIFY_ARG & irq_set) { /* subscribed interrupt */
-                       printf("Hello! :) /n");
+	              if (msg.NOTIFY_ARG & irq_set) {
+                      timer_int_handler(); //increment the counter on every interrupt
+	                  printf("Hello! :) /n");
 	              }
 	               break;
 	         default:
@@ -159,11 +162,9 @@ int timer_test_int(unsigned long time) {
 	} else { /* received a standard message, not a notification */
 	     /* no standard messages expected: do nothing */
 	       }
-	    loop_counter++;
 	}
-	if(timer_unsubscribe_int() != 0)
-	    return 1;
-	else return 0;
+	timer_unsubscribe_int();
+	return 0;
 }
 
 int timer_test_config(unsigned long timer){
