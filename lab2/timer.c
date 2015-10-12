@@ -30,9 +30,6 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 		if (timer_get_conf(timer, &st) != 0)
 			return 1;
 
-		unsigned char frequency_LSB = frequency & 0xFF;
-		unsigned char frequency_MSB = (frequency) >> 8;
-
 		if ((st & BIT(0)) == TIMER_BCD){
 			if(sys_outb(TIMER_CTRL, timer_selection | TIMER_LSB_MSB | TIMER_SQR_WAVE | TIMER_BCD) != OK)
 				return 1;
@@ -67,7 +64,7 @@ int timer_subscribe_int(void ) {
 		printf("Irqenable failed \n");
 		return 1;
 		}
-	else return 0;
+	else hook_id;
 }
 
 int timer_unsubscribe_int() {
@@ -136,12 +133,13 @@ int timer_test_square(unsigned long freq) {
 }
 
 int timer_test_int(unsigned long time) {
-     int irq_set;
 	 int ipc_status;
 	 int r;
 	 message msg;
 
-	while( 1 ) {  //Interrupt loop
+	 int loop_counter = 0; //loop iteration counter;
+     int irq_set = timer_subscribe_int();
+	while( loop_counter < time ) {  //Interrupt loop
 	     /* Get a request message. */
 		r = driver_receive(ANY, &msg, &ipc_status);
 	    if ( r != 0 ) {
@@ -152,7 +150,7 @@ int timer_test_int(unsigned long time) {
 	       switch (_ENDPOINT_P(msg.m_source)) {
 	           case HARDWARE: /* hardware interrupt notification */
 	              if (msg.NOTIFY_ARG & irq_set) { /* subscribed interrupt */
-	                      /* process it */
+                       printf("Hello! :) /n");
 	              }
 	               break;
 	         default:
@@ -161,8 +159,11 @@ int timer_test_int(unsigned long time) {
 	} else { /* received a standard message, not a notification */
 	     /* no standard messages expected: do nothing */
 	       }
+	    loop_counter++;
 	}
-	return 1;
+	if(timer_unsubscribe_int() != 0)
+	    return 1;
+	else return 0;
 }
 
 int timer_test_config(unsigned long timer){
