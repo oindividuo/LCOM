@@ -139,9 +139,9 @@ int timer_test_int(unsigned long time) {
 	 int ipc_status;
 	 int r;
 	 message msg;
-	 time_counter = 0;
+	  time_counter = 0;
      int irq_set = 0;
-     irq_set = timer_subscribe_int(); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
+     irq_set = timer_subscribe_int(); // irq_set - bitmask with the bits corresponding to the hook_id set to 1
      if(irq_set == -1)
     	 return 1;
      irq_set = BIT(irq_set);
@@ -159,7 +159,7 @@ int timer_test_int(unsigned long time) {
              	              if (msg.NOTIFY_ARG & irq_set) {
                                    timer_int_handler(); //increment the counter on every interrupt
                                    if(time_counter % 60== 0)
-             	                  printf("Hello! :) \n");
+             	                  printf("Hello! :) \n"); //one message per second
              	              }
              	               break;
              	         default:
