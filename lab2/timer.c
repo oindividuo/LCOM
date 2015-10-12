@@ -1,8 +1,8 @@
 #include "timer.h"
 #include <stdio.h>
 
-static unsigned int time_counter = 0;
-static int hook_id = 0;
+static unsigned int time_counter;
+static int hook_id;
 
 int timer_set_square(unsigned long timer, unsigned long freq)
 {
@@ -56,6 +56,7 @@ int timer_set_square(unsigned long timer, unsigned long freq)
 }
 
 int timer_subscribe_int(void ) {
+	hook_id = 0;
 	if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK){ //output the EOI command to the PIC
 		printf("Irqsetpolicy failed \n");
 		return 1;
@@ -64,7 +65,7 @@ int timer_subscribe_int(void ) {
 		printf("Irqenable failed \n");
 		return 1;
 		}
-	else return hook_id;
+	else return 0;
 }
 
 int timer_unsubscribe_int() {
@@ -140,31 +141,35 @@ int timer_test_int(unsigned long time) {
 	 message msg;
 
      int irq_set = 0;
-     irq_set = BIT(timer_subscribe_int()); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
-	while(time_counter < time) {  //Interrupt loop
-	     /* Get a request message. */
-		r = driver_receive(ANY, &msg, &ipc_status);
-	    if ( r != 0 ) {
-	      printf("driver_receive failed with: %d", r);
-	        continue;
-	    }
-	    if (is_ipc_notify(ipc_status)) { /* received notification */
-	       switch (_ENDPOINT_P(msg.m_source)) {
-	           case HARDWARE: /* hardware interrupt notification */
-	              if (msg.NOTIFY_ARG & irq_set) {
-                      timer_int_handler(); //increment the counter on every interrupt
-	                  printf("Hello! :) /n");
-	              }
-	               break;
-	         default:
-	        break; /* no other notifications expected: do nothing */
-	   }
-	} else { /* received a standard message, not a notification */
-	     /* no standard messages expected: do nothing */
-	       }
-	}
-	timer_unsubscribe_int();
-	return 0;
+     irq_set = timer_subscribe_int(); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
+     irq_set = BIT(irq_set);
+
+         while(time_counter < time*60) {  //Interrupt loop
+             	     /* Get a request message. */
+             		r = driver_receive(ANY, &msg, &ipc_status);
+             	    if ( r != 0 ) {
+             	      printf("driver_receive failed with: %d", r);
+             	        continue;
+             	    }
+             	    if (is_ipc_notify(ipc_status)) { /* received notification */
+             	       switch (_ENDPOINT_P(msg.m_source)) {
+             	           case HARDWARE: /* hardware interrupt notification */
+             	              if (msg.NOTIFY_ARG & irq_set) {
+                                   timer_int_handler(); //increment the counter on every interrupt
+                                   if(time_counter % 60== 0)
+             	                  printf("Hello! :) \n");
+             	              }
+             	               break;
+             	         default:
+             	        break; /* no other notifications expected: do nothing */
+             	   }
+             	} else { /* received a standard message, not a notification */
+             	     /* no standard messages expected: do nothing */
+             	       }
+             	}
+     time_counter = 0;
+
+     return timer_unsubscribe_int();
 }
 
 int timer_test_config(unsigned long timer){
