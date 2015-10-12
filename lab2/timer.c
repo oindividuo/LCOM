@@ -59,11 +59,11 @@ int timer_subscribe_int(void ) {
 	hook_id = 0;
 	if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK){ //output the EOI command to the PIC
 		printf("Irqsetpolicy failed \n");
-		return 1;
+		return -1;
 	   	   }
 	else if(sys_irqenable((&hook_id)) != OK){ //enables interrupts on the IRQ line associated with the hook_id
 		printf("Irqenable failed \n");
-		return 1;
+		return -1;
 		}
 	else return 0;
 }
@@ -142,7 +142,7 @@ int timer_test_int(unsigned long time) {
 
      int irq_set = 0;
      irq_set = timer_subscribe_int(); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
-     if(irq_set != 0)
+     if(irq_set == -1)
     	 return 1;
      irq_set = BIT(irq_set);
 
