@@ -139,7 +139,7 @@ int timer_test_int(unsigned long time) {
 	 int ipc_status;
 	 int r;
 	 message msg;
-
+	 time_counter = 0;
      int irq_set = 0;
      irq_set = timer_subscribe_int(); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
      if(irq_set == -1)
@@ -169,7 +169,6 @@ int timer_test_int(unsigned long time) {
              	     /* no standard messages expected: do nothing */
              	       }
              	}
-     time_counter = 0;
 
      return timer_unsubscribe_int();
 }
