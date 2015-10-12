@@ -142,6 +142,8 @@ int timer_test_int(unsigned long time) {
 
      int irq_set = 0;
      irq_set = timer_subscribe_int(); // irq_set contains the bit that will be set to 1 and that device driver will receive the notification
+     if(irq_set != 0)
+    	 return 1;
      irq_set = BIT(irq_set);
 
          while(time_counter < time*60) {  //Interrupt loop
