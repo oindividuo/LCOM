@@ -4,7 +4,9 @@
 #include <minix/sysutil.h>
 
 #define DELAY_US    20000
-#define BIT(n) (0x01<<(n))
+tickdelay(micros_to_ticks(DELAY_US);
+
+
 //Registers
 	//status
 #define STAT_REG    0x64	//Read the KBC state
@@ -16,6 +18,7 @@
 #define KBD_ARG_REG 0x60	//Arguments of keyboard commands
 
 	//output buffer (read)
+#define OUT_BUF			0x60	//General use
 #define KBD_SCNCOD_REG 	0x60	//Scandcodes, both make and break, received from the keyboar
 #define KBC_CMD_RET_REG	0x60	//Return values from KBC command
 #define KBD_CMD_RET_REG	0x60	//Return values from keyboard command
