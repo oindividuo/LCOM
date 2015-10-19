@@ -3,19 +3,19 @@
 
 //Registers
 	//status
-#define STAT_REG    0x64
+#define STAT_REG    0x64	//Read the KBC state
 
 	//input buffer (write)
-#define KBC_CMD_REG 0x64
-#define KBC_ARG_REG 0x60
-#define KBD_CMD_REG 0x60
-#define KBD_ARG_REG 0x60
+#define KBC_CMD_REG 0x64	//Commands to the KBC
+#define KBC_ARG_REG 0x60	//Arguments of KBC commands
+#define KBD_CMD_REG 0x60	//Commands to the keyboard
+#define KBD_ARG_REG 0x60	//Arguments of keyboard commands
 
 	//output buffer (read)
-#define KBD_SCNCOD_REG 	0x60
-#define KBC_CMD_RET_REG	0x60
-#define KBD_CMD_RET_REG	0x60
-#define KBD_PRTCL_MSG 	0x60
+#define KBD_SCNCOD_REG 	0x60	//Scandcodes, both make and break, received from the keyboar
+#define KBC_CMD_RET_REG	0x60	//Return values from KBC command
+#define KBD_CMD_RET_REG	0x60	//Return values from keyboard command
+#define KBD_PRTCL_MSG 	0x60	//Confirmation protocol messages (ACK, Resend and Error)
 
 
 
