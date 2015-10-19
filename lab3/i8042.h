@@ -1,6 +1,12 @@
 #ifndef _LCOM_I8042_H_
 #define _LCOM_I8042_H_
 
+#include <minix/sysutil.h>
+
+#define DELAY_US    20000
+tickdelay(micros_to_ticks(DELAY_US);
+
+
 //Registers
 	//status
 #define STAT_REG    0x64	//Read the KBC state
