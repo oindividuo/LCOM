@@ -36,7 +36,26 @@ int kbd_interrupt_handler(){ //  reads the bytes from the KBC’s OUT_BUF
 	     return scanned_key;
 	    else
 	     return -1;
-	}
+	}Lab 3:
+	kbd_test_scan
+	(1/2)
+	What
+	  Prints the scancodes, both the
+	makecode
+	and the
+	breakcode
+	,
+	read from the KBC
+	I
+	Should terminate when it reads the
+	breakcode
+	of the
+	ESC
+	key:
+	0x81
+	I
+	The first byte of two byte scancodes is usualy
+	0xE
 	   tickdelay(micros_to_ticks(DELAY_US);
 	}
 }
@@ -75,4 +94,7 @@ int kbd_test_scan(unsigned short ass) {
 	if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
 		return 1;
 }
-Chat conversation end
+
+int kbd_test_leds(unsigned short n, unsigned short *leds);
+
+int kbd_test_timed_scan(unsigned short n);

@@ -4,7 +4,7 @@
 #include <minix/sysutil.h>
 
 #define DELAY_US    20000
-
+#define BIT(n) (0x01<<(n))
 //Registers
 	//status
 #define STAT_REG    0x64	//Read the KBC state
