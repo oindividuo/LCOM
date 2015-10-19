@@ -62,10 +62,6 @@ int kbd_test_scan(unsigned short ass) {
 	             	           case HARDWARE: /* hardware interrupt notification */
 	             	              if (msg.NOTIFY_ARG & irq_set) {
                                        kbc_interrupt_handler();
-                                       if (scanned_key & BIT(7) == 0x00)
-                                    	   printf("Makecode: 0x%X", scanned_key);
-                                       else if (scanned_key & BIT(7) == 0x80)
-                                    	   printf("Breakcode: 0x%X", scanned_key);
 	             	              }
 	             	               break;
 	             	         default:
@@ -81,5 +77,4 @@ int kbd_test_scan(unsigned short ass) {
 }
 
 int kbd_test_leds(unsigned short n, unsigned short *leds);
-
 int kbd_test_timed_scan(unsigned short n);
