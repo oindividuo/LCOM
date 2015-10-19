@@ -4,7 +4,8 @@
 #include <minix/sysutil.h>
 
 #define DELAY_US    20000
-tickdelay(micros_to_ticks(DELAY_US);
+
+#define BIT(n) (0x01<<(n))
 
 
 //Registers
