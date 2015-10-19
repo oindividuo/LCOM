@@ -1,6 +1,8 @@
 #ifndef __TEST3_H
 #define __TEST3_H
 
+#include "i8042.h"
+
 /** @defgroup test3 test3
  * @{
  *

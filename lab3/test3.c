@@ -1,7 +1,7 @@
 #include "test3.h"
 #include <stdio.h>
 
-static int hook_id;
+static int hook_id, scanned_key;
 
 int kbd_subscribe_int(void ) {
 	hook_id = 1;  //keyboard's IRQ number is 1.
@@ -26,16 +26,18 @@ int kbd_unsubscribe_int() {
 }
 
 int kbd_interrupt_handler(){ //  reads the bytes from the KBC’s OUT_BUF
+	unsigned long stat;
+
 	while( 1 ) {
 	sys_inb(STAT_REG, &stat); /* assuming it returns OK */
 	   if( stat & OBF ) {
-	     sys_inb(OUT_BUF, &data); // assuming it returns OK
+	     sys_inb(OUT_BUF, &scanned_key); // assuming it returns OK
 	   if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
-	     return data;
+	     return scanned_key;
 	    else
 	     return -1;
 	}
-	delay(WAIT_KBC);
+	   tickdelay(micros_to_ticks(DELAY_US);
 	}
 }
 
@@ -59,7 +61,7 @@ int kbd_test_scan(unsigned short ass) {
 	             	       switch (_ENDPOINT_P(msg.m_source)) {
 	             	           case HARDWARE: /* hardware interrupt notification */
 	             	              if (msg.NOTIFY_ARG & irq_set) {
-                                       scanned_key = kbc_interrupt_handler();
+                                       kbc_interrupt_handler();
 	             	              }
 	             	               break;
 	             	         default:
@@ -73,3 +75,4 @@ int kbd_test_scan(unsigned short ass) {
 	if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
 		return 1;
 }
+Chat conversation end
