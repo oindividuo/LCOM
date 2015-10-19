@@ -73,4 +73,3 @@ int kbd_test_scan(unsigned short ass) {
 	if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
 		return 1;
 }
-Chat conversation end
