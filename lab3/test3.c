@@ -25,8 +25,18 @@ int kbd_unsubscribe_int() {
 	else return 0;
 }
 
-void kbd_interrupt_handler(){ //  reads the bytes from the KBC’s OUT_BUF
-
+int kbd_interrupt_handler(){ //  reads the bytes from the KBC’s OUT_BUF
+	while( 1 ) {
+	sys_inb(STAT_REG, &stat); /* assuming it returns OK */
+	   if( stat & OBF ) {
+	     sys_inb(OUT_BUF, &data); // assuming it returns OK
+	   if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+	     return data;
+	    else
+	     return -1;
+	}
+	delay(WAIT_KBC);
+	}
 }
 
 int kbd_test_scan(unsigned short ass) {
@@ -37,7 +47,8 @@ int kbd_test_scan(unsigned short ass) {
 	     if(irq_set != 0)
 	    	 return 1;
 	     irq_set = BIT(irq_set);
-	while(!= ESC_BREAK)) {  //Interrupt loop
+	     int scanned_key = 0;
+	while(scanned_key != ESC_BREAK)) {  //Interrupt loop
 	             	     /* Get a request message. */
 	             		r = driver_receive(ANY, &msg, &ipc_status);
 	             	    if ( r != 0 ) {
@@ -48,7 +59,7 @@ int kbd_test_scan(unsigned short ass) {
 	             	       switch (_ENDPOINT_P(msg.m_source)) {
 	             	           case HARDWARE: /* hardware interrupt notification */
 	             	              if (msg.NOTIFY_ARG & irq_set) {
-
+                                       scanned_key = kbc_interrupt_handler();
 	             	              }
 	             	               break;
 	             	         default:
