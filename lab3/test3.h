@@ -2,7 +2,10 @@
 #define __TEST3_H
 
 #include "i8042.h"
-
+#include <minix/syslib.h>
+#include <minix/drivers.h>
+#include <minix/sysutil.h>
+#include "kbd.h"
 
 /** @defgroup test3 test3
  * @{
@@ -46,5 +49,6 @@ int kbd_test_leds(unsigned short n, unsigned short *leds);
  * @return Return 0 upon success and non-zero otherwise
  */
 int kbd_test_timed_scan(unsigned short n);
+
 
 #endif /* __TEST3_H */

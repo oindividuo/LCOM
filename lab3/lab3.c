@@ -12,7 +12,10 @@ int main(int argc, char **argv) {
 
   /* Initialize service */
 
-  sef_startup();
+	sef_startup();
+
+	    /* Enable IO-sensitive operations for ourselves */
+	    sys_enable_iop(SELF);
 
   if ( argc == 1 ) {
       print_usage(argv);
@@ -34,7 +37,8 @@ static void print_usage(char *argv[]) {
 
 static int proc_args(int argc, char *argv[]) {
 
-  unsigned long ass, n, toogle;
+  unsigned long ass, n;
+  unsigned short toogle;
 
   /* check the function to test: if the first characters match, accept it */
   if (strncmp(argv[1], "scan", strlen("scan")) == 0) {
@@ -47,14 +51,14 @@ static int proc_args(int argc, char *argv[]) {
 	  printf("keyboard:: kbd_test_scan(%lu)\n", ass);
 	  return  kbd_test_scan(ass);
   } else if (strncmp(argv[1], "leds", strlen("leds")) == 0) {
-	  if( argc != 3 ) {
+	  if( argc != 4 ) {
 		  printf("keyboard: wrong no of arguments for test of kbd_test_leds() \n");
 		  return 1;
 	  }
 	  if( (n = parse_ulong(argv[2], 10)) == ULONG_MAX )
 		  return 1;
-	  printf("keyboard:: kbd_test_scan() \n", n); //completar
-	  return kbd_test_leds(n, toogle);
+	  printf("keyboard:: kbd_test_scan() \n");
+	  return kbd_test_leds(n, &toogle);
   } else if (strncmp(argv[1], "timed_scan", strlen("timed_scan")) == 0) {
 	  if( argc != 3 ) {
 		  printf("keyboard: wrong no of arguments for test of kbd_test_timed_scan() \n");
