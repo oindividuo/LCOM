@@ -62,7 +62,17 @@ int kbd_Toogle_Leds(unsigned long led_state){
 
 	kbd_interrupt_handler_write(KBD_LED);
 	byte = kbd_interrupt_handler_read();
+
+	while(byte == KBD_RESEND)//the latest byte should be written again
+		{kbd_interrupt_handler_write(led_state);
+			kbd_interrupt_handler_read();
+		}
+
+	if(byte == KBD_ERROR ) //the entire sequence should be restarted
+		return -1;
+
 	kbd_interrupt_handler_write(led_state);
-	byte = kbd_interrupt_handler_read();
+	kbd_interrupt_handler_read();
+	return 0;
 }
 

@@ -94,8 +94,9 @@ int kbd_test_leds(unsigned short n, unsigned short *leds){
 													 else l2 = 0;
 												 }
 												 led_state = l0|l1|l2;
-												 kbd_Toogle_Leds(led_state);
-												 i++;
+												 if(kbd_Toogle_Leds(led_state) == -1)
+													 i = 0; //in order to start the sequence
+												 else i++;
 												 }
 		             	            	  }
 		             	              }
