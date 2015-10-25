@@ -6,6 +6,8 @@
 #include <minix/drivers.h>
 #include <minix/sysutil.h>
 #include "kbd.h"
+#include "timer.h"
+
 
 /** @defgroup test3 test3
  * @{

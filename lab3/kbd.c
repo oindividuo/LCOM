@@ -1,14 +1,14 @@
 #include "kbd.h"
 
-static int hook_id;
+static int hooke_id;
 
 int kbd_subscribe_int(void ) {
-	hook_id = KBD_IRQ;  //keyboard's IRQ number is 1.
-	if(sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE|IRQ_EXCLUSIVE, &hook_id) != OK){ //output the EOI command to the PIC
+	hooke_id = KBD_IRQ;  //keyboard's IRQ number is 1.
+	if(sys_irqsetpolicy(KBD_IRQ, IRQ_REENABLE|IRQ_EXCLUSIVE, &hooke_id) != OK){ //output the EOI command to the PIC
 		printf("Irqsetpolicy failed \n");
 		return -1;
 	   	   }
-	else if(sys_irqenable((&hook_id)) != OK){ //enables interrupts on the IRQ line associated with the hook_id
+	else if(sys_irqenable((&hooke_id)) != OK){ //enables interrupts on the IRQ line associated with the hook_id
 		printf("Irqenable failed \n");
 		return -1;
 		}
@@ -16,9 +16,9 @@ int kbd_subscribe_int(void ) {
 }
 
 int kdb_unsubscribe_int() {
-	if ((sys_irqrmpolicy(&hook_id) != OK))
+	if ((sys_irqrmpolicy(&hooke_id) != OK))
 		return 1;
-		else if (sys_irqdisable(&hook_id) != OK)
+		else if (sys_irqdisable(&hooke_id) != OK)
 		return 1;
 
 	else return 0;
@@ -41,3 +41,28 @@ int kbd_interrupt_handler_read(){ //  reads the bytes from the KBC’s OUT_BUF
 	   tickdelay(micros_to_ticks(DELAY_US));
 	}
 }
+
+int kbd_interrupt_handler_write(unsigned char command){
+	unsigned long stat;
+	while( 1 ) {
+		/* loop while 8042 input buffer is not empty */
+		if(sys_inb(STAT_REG, &stat) != OK)
+			return -1;
+
+			if( (stat & IBF) == 0 ) {
+				sys_outb(OUT_BUF, command); /* no args command */
+					return 0;
+			}
+			tickdelay(micros_to_ticks(DELAY_US));
+	}
+}
+
+int kbd_Toogle_Leds(unsigned long led_state){
+	unsigned long byte;
+
+	kbd_interrupt_handler_write(KBD_LED);
+	byte = kbd_interrupt_handler_read();
+	kbd_interrupt_handler_write(led_state);
+	byte = kbd_interrupt_handler_read();
+}
+

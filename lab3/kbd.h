@@ -16,5 +16,7 @@
 int kbd_interrupt_handler_read();
 int kbd_subscribe_int(void );
 int kdb_unsubscribe_int();
+int kbd_Toogle_Leds(unsigned long led_state);
+int kbd_interrupt_handler_write(unsigned char command);
 
 #endif /* _KBD_H */
