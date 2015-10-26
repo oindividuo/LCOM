@@ -4,7 +4,7 @@
 
 int kbd_test_scan(unsigned short ass) {
 
-	 int ipc_status, r, irq_set = 0;
+	 int ipc_status, r, irq_set = 0, two_byte = false;
 	 bool break_code_flag = false;
 	 unsigned long key;
 		 message msg;
@@ -22,30 +22,43 @@ int kbd_test_scan(unsigned short ass) {
 	             	           case HARDWARE: /* hardware interrupt notification */
 	             	              if (msg.NOTIFY_ARG & irq_set) {
 	             	            	  if(ass == 0){ // IH written in C
-	             	                      key = kbd_interrupt_handler_read();
+	             	            		  key = kbd_interrupt_handler_read();
+	             	            		  if (key == 0xE0)
+	             	                      {
+	             	                    	  two_byte = true;
+	             	                      }
+	             	            		  else if (two_byte == true)
+	             	                      {
+	             	            			  key |= 0xE0 << 8;
+	             	            			  two_byte = false;
+	             	            			  if ((key) & BIT(7)){
+	             	            				  printf("breakcode: 0x%X \n", key);}
+	             	            			  else{
+	             	            				  printf("makecode:  0x%X \n", key);}
 
-	             	                      if ((key) & BIT(7)){
-	             	                     			printf("breakcode: 0x%X \n", key);}
-	             	                     else{
-	             	                     			printf("makecode: 0x%X \n", key);}
-
-	             	                     if (key == ESC_BREAK)
-	             	                    	break_code_flag = true;
-	             	            	  }
-
+	             	            			  if (key == ESC_BREAK)
+	             	            				  break_code_flag = true;
+	             	                      }
+	             	            		  else {
+	             	            			  if ((key) & BIT(7)){
+	             	            				  printf("breakcode: 0x%X \n", key);}
+	             	            			  else{
+	             	            				  printf("makecode:  0x%X \n", key);}
+	             	            			  if (key == ESC_BREAK)
+	             	            				  break_code_flag = true;
+	             	            		  }}
 	             	            	  if(ass == 1){ //IH written in assembly
 	             	           //completar
 	             	            	  }
 	             	              }
-	             	               break;
-	             	         default:
-	             	        break; /* no other notifications expected: do nothing */
-	             	   }
-	             	} else { /* received a standard message, not a notification */
-	             	     /* no standard messages expected: do nothing */
+	             	              break;
+	             	           default:
+	             	        	   break; /* no other notifications expected: do nothing */
 	             	       }
-	             	}
-
+	             	    } else { /* received a standard message, not a notification */
+	             	    	/* no standard messages expected: do nothing */
+	             	    }
+	}
 	if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
 		return 1;
 
@@ -157,10 +170,8 @@ int kbd_test_timed_scan(unsigned short n){
 		             	     /* no standard messages expected: do nothing */
 		             	}
 		}
-
         timer_unsubscribe_int();
 		if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
 			return 1;
-
 		return 0;
 }
