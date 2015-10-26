@@ -124,7 +124,7 @@ int kbd_test_leds(unsigned short n, unsigned short *leds){
 }
 
 int kbd_test_timed_scan(unsigned short n){
-	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
+	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0, two_byte = false;
 		 bool break_code_flag = false, time_flag = false;
 		 unsigned long key;
 			 message msg;
@@ -149,14 +149,30 @@ int kbd_test_timed_scan(unsigned short n){
 		             	              if (msg.NOTIFY_ARG & irq_kbd) {
 		             	                      key = kbd_interrupt_handler_read();
                                               time_counter=0;
-		             	                      if ((key) & BIT(7)){
-		             	                     			printf("breakcode: 0x%X \n", key);}
-		             	                     else{
-		             	                     			printf("makecode: 0x%X \n", key);}
+                                              if (key == 0xE0)
+                                              {
+                                            	  two_byte = true;
+                                              }
+                                              else if (two_byte == true)
+                                              {
+                                            	  key |= 0xE0 << 8;
+                                            	  two_byte = false;
+                                            	  if ((key) & BIT(7)){
+                                            		  printf("breakcode: 0x%X \n", key);}
+                                            	  else{
+                                            		  printf("makecode:  0x%X \n", key);}
 
-		             	                     if (key == ESC_BREAK)
-		             	                    	break_code_flag = true;
-		             	            	  }
+                                            	  if (key == ESC_BREAK)
+                                            		  break_code_flag = true;
+                                              }
+                                              else {
+                                            	  if ((key) & BIT(7)){
+                                            		  printf("breakcode: 0x%X \n", key);}
+                                            	  else{
+                                            		  printf("makecode:  0x%X \n", key);}
+                                            	  if (key == ESC_BREAK)
+                                            		  break_code_flag = true;
+                                              }}
 		             	              if(msg.NOTIFY_ARG & irq_timer){
                                           time_counter++;
                                           if(time_counter > n*60)
