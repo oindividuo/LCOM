@@ -63,8 +63,6 @@ int kbd_test_leds(unsigned short n, unsigned short *leds){
 		     if(irq_set == -1)
 		    	 return 1;
 
-		     //if (timer_subscribe_int() == -1)
-		     		return 1;
 
 		irq_set = BIT(irq_set);
 		unsigned int i = 0;
@@ -108,53 +106,60 @@ int kbd_test_leds(unsigned short n, unsigned short *leds){
 		             	     /* no standard messages expected: do nothing */
 		             	       }
 		             	}
-		 //timer_unsubscribe_int();
 		 return kdb_unsubscribe_int();
 
 }
 
 int kbd_test_timed_scan(unsigned short n){
-	int r, ipc_status, time_counter = 0;
+	int ipc_status, r, irq_kbd = 0, int_timer = 0, time_counter = 0;
+	bool break_code_flag = false, time_flag = false;
 	unsigned long key;
-			message msg;
-			int irq_set = 0;
-			irq_set = kbd_subscribe_int();
+	message msg;
+	irq_kbd = kbd_subscribe_int();
+	irq_timer = timer_subscribe_int();
 
-			     if(irq_set == -1)
-			    	 return 1;
-			     //if ( timer_subscribe_int() == -1)
-			     		return 1;
+	if (irq_timer == -1 || irq_kbd == -1)
+		return 1;
 
-			irq_set = BIT(irq_set);
-			unsigned int i = 0;
-			 while(time_counter < n*60) {  //Interrupt loop
-			             	     /* Get a request message. */
-			             		r = driver_receive(ANY, &msg, &ipc_status);
-			             	    if ( r != 0 ) {
-			             	      printf("driver_receive failed with: %d", r);
-			             	        continue;
-			             	    }
-			             	    if (is_ipc_notify(ipc_status)) { /* received notification */
-			             	       switch (_ENDPOINT_P(msg.m_source)) {
-			             	           case HARDWARE: /* hardware interrupt notification */
-			             	              if (msg.NOTIFY_ARG & irq_set) {
-			             	            	 key = kbd_interrupt_handler_read();
+	irq_kbd = BIT(irq_kbd);
+	irq_timer = BIT(irq_timer);
+	while(!break_code_flag && !time_flag) {  //Interrupt loop
+		/* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+		if ( r != 0 ) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_kbd) {
+					key = kbd_interrupt_handler_read();
+					time_counter=0;
+					if ((key) & BIT(7)){
+						printf("breakcode: 0x%X \n", key);}
+					else{
+						printf("makecode: 0x%X \n", key);}
 
-			             	             if ((key) & BIT(7)){
-			             	            		printf("breakcode: 0x%X \n", key);}
-			             	        else{
-			             	            	printf("makecode: 0x%X \n", key);}
-			             	            	  }
-			             	               break;
-			             	         default:
-			             	        break; /* no other notifications expected: do nothing */
-			             	   }
-			             	} else { /* received a standard message, not a notification */
-			             	     /* no standard messages expected: do nothing */
-			             	       }
-			             	}
-			//timer_unsubscribe_int();
-			 return kdb_unsubscribe_int();
-
+					if (key == ESC_BREAK)
+						break_code_flag = true;
+				}
+				if(msg.NOTIFY_ARG & irq_timer){
+					timer_int_handler();
+				}
+			}
+			break;
+			default:
+				break; /* no other notifications expected: do nothing */
+		}
+	} else { /* received a standard message, not a notification */
+		/* no standard messages expected: do nothing */
 	}
+}
 
+timer_unsubscribe_int();
+if(kdb_unsubscribe_int()!= 0) //in order to use Minix 3 virtual terminals
+	return 1;
+
+return 0;
+}
