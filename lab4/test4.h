@@ -1,6 +1,13 @@
 #ifndef __TEST4_H
 #define __TEST4_H
 
+#include <minix/drivers.h>
+#include <minix/com.h>
+#include <minix/sysutil.h>
+#include <minix/syslib.h>
+#include "i8042.h"
+#include "mouse.h"
+
 /** @defgroup test4 test4
  * @{
  *
