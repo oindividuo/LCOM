@@ -7,6 +7,8 @@
 #include <minix/syslib.h>
 #include "i8042.h"
 #include "mouse.h"
+#include "stdbool.h"
+
 
 /** @defgroup test4 test4
  * @{

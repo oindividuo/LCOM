@@ -25,18 +25,17 @@ int ms_unsubscribe_int() {
 
 int ms_read() {
 	unsigned long stat, key;
+		while(1) {
 
-		while( 1 ) {
-
-			if ( sys_inb(STAT_REG, &stat) != OK )
+			if (sys_inb(STAT_REG, &stat) != OK )
 				return 1;
 			if( stat & OBF ) {
 				sys_inb(OUT_BUF, &key);
-				//if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+				if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
 				return key;
 
-				//else
-				//return -1;
+				else
+				return -1;
 			}
 			tickdelay(micros_to_ticks(DELAY_US));
 		}
@@ -71,8 +70,9 @@ int MS_to_KBD_Commands(unsigned char command){
 
 
 int ms_int_handler(int *b_counter, char *pack) {
+
 	unsigned long byte;
-	sys_inb(OUT_BUF, &byte);
+	byte = ms_read();
 		if (byte == -1) {
 			return 1;
 		} else {
