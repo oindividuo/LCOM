@@ -18,5 +18,6 @@ int ms_read();
 int ms_write(unsigned char port, unsigned char command);
 int MS_to_KBD_Commands(unsigned char command);
 int ms_int_handler(int *b_counter, char *pack);
+int kbc_clean_output_buffer(unsigned num_tries);
 
 #endif

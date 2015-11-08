@@ -25,7 +25,8 @@ int ms_unsubscribe_int() {
 
 int ms_read() {
 	unsigned long stat, key;
-		while(1) {
+	unsigned int i = 0;
+		while(i < 10) {
 
 			if (sys_inb(STAT_REG, &stat) != OK )
 				return 1;
@@ -38,6 +39,7 @@ int ms_read() {
 				return -1;
 			}
 			tickdelay(micros_to_ticks(DELAY_US));
+			i++;
 		}
 		return 1;
 }
@@ -62,22 +64,28 @@ int MS_to_KBD_Commands(unsigned char command){
 
 	do {
 		ms_write(STAT_REG, MS_WRITE_BYTE); //first write command 0xD4 to the KBC, i.e. using port 0x64
-		ms_write(OUT_BUF, command);// mouse command to port 0x60
-		byte = ms_read();//acknowledgment (message) in the output buffer
-	}while (byte == MS_NACK);  //the latest byte should be written again
+
+		do{
+			ms_write(OUT_BUF, command);// mouse command to port 0x60
+			byte = ms_read();//acknowledgment (message) in the output buffer
+		}while(byte == MS_NACK);//the latest byte should be written again
+
+	}while (byte == MS_ERROR);
 }
-
-
 
 int ms_int_handler(int *b_counter, char *pack) {
 
-	unsigned long byte;
+	unsigned long byte, aux;
 	byte = ms_read();
-		if (byte == -1) {
-			return 1;
-		} else {
-			*pack = (unsigned int)byte;
-			*b_counter = *b_counter + 1;
-			return 0;
-		}
+	if (byte == -1) {
+		return 1;
+	} else {
+		do{
+			aux = ms_read();
+		}while(aux != 1);
+		printf("532 ");
+		*pack = (unsigned int) byte;
+		*b_counter = *b_counter + 1;
+		return 0;
+	}
 }

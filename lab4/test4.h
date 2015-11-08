@@ -8,7 +8,8 @@
 #include "i8042.h"
 #include "mouse.h"
 #include "stdbool.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 
 /** @defgroup test4 test4
  * @{
