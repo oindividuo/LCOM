@@ -69,8 +69,20 @@
 #define MS_ACK          0xFA    //Reset
 #define MS_NACK         0xFE    //Resend
 #define MS_ERROR        0xFC    //second consecutive invalid byte
-#define MS_SET_DEFAULTS 0xF6    // Set default values
-#define MS_DSB_STREAM_M 0xF5  // In stream mode, should be sent before any other command
-#define MS_DATA_PACKETS 0xF4    //Enable Sending Data Packets - In stream mode only
+
+//MS_WRITE_BYTE arguments
+#define MS_RESET		0xFF	//Mouse reset
+#define MS_RESEND		0xFE	//For serial communications errors
+#define MS_SET_DEFAULTS 0xF6	//Set default values
+#define MS_DSB_STREAM_M	0xF5	//Disable Stream Mode - In stream mode, should be sent before any other command
+#define MS_DATA_PACKETS	0xF4	//Enable Sending Data Packets - In stream mode only
+#define MS_SET_SMP_RATE	0xF3	//Set Sample Rate - Sets state sampling rate
+#define MS_SET_REM_MODE	0xF0	//Set Remote mode - Send data on request only
+#define MS_READ_DATA	0xEB	//Send data packet request
+#define MS_SET_STR_MODE	0xEA	//Set Stream Mode - Send data on events
+#define MS_STATUS_REQ	0xE9	//Status Request - Get mouse configuration (3 bytes)
+#define MS_SET_RES		0xE8	//Set Resolution
+#define MS_SET_SCAL_2	0xE7	//Set Scaling 2:1 - Acceleration mode
+#define MS_SET_SCAL_1	0xE6	//Set Scaling 1:1 - Linear mode
 
 #endif /* _LCOM_I8042_H */

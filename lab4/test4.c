@@ -3,7 +3,7 @@
 
 static char packet[3];
 
-void print_packet(){
+void print_packtet(void) {
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
 
@@ -13,20 +13,24 @@ void print_packet(){
 	rb = (packet[0] & BIT(1)) >> 1;
 	lb = (packet[0] & BIT(0));
 
-	if ((packet[0] & BIT(5)) != 0) {
-		//valor absoluto de um numero em complemento para 2 negativo
+	if ((packet[0] & BIT(5)) != 0)
+	{
+		//absolute value of a negative number in 2's complement
 		dy = ~(0xFF & packet[2]);
 		dy += 1;
 		dy = ~(0xFF & dy);
-	} else
+	}
+	else
 		dy = packet[2];
 
-	if ((packet[0] & BIT(4)) != 0) {
-		//valor absoluto de um numero em complemento para 2 negativo
+	if ((packet[0] & BIT(4)) != 0)
+	{
+		//absolute value of a negative number in 2's complement
 		dx = ~(0xFF & packet[1]);
 		dx += 1;
 		dx = ~(0xFF & dx);
-	} else
+	}
+	else
 		dx = packet[1];
 
 	printf("B1=0x%X	B2=0x%X	B3=0x%X ", packet[0], packet[1], packet[2]);
@@ -38,6 +42,85 @@ void print_packet(){
 	printf("X=%i ", dx);
 	printf("Y=%i ", dy);
 }
+
+void set_config_values(int rb, int mb, int lb, int sca, int sta, int mod, int res, int smp) {
+	char c1, c2;
+	c1 = ms_read();
+	c2 = c1;
+
+	rb = BIT(0) & c1;
+	mb = (BIT(1) & c1) >> 1;
+	lb = (BIT(2) & c1) >> 2;
+	sca = (BIT(4) & c1) >> 4;
+	sta = (BIT(5) & c1) >> 5;
+	mod = (BIT(6) & c1) >> 6;
+
+	c2 = ms_read();
+	c1 = c2;
+
+	if ((int)c1 >= 8)
+		res = 8;
+	else if ((int)c1 >= 4)
+		res = 4;
+	else if ((int)c1 >= 2)
+		res = 2;
+	else if ((int)c1 >= 1)
+		res = 1;
+
+	c2 = ms_read();
+	c1 = c2;
+
+	smp = c1;
+}
+
+void print_config(int rb, int mb, int lb, int sca, int sta, int mod, int res, int smp) {
+
+	printf("/nConfiguration/n")
+
+	if ((bool)sta)
+		printf("En");
+	else
+		printf("Dis");
+	printf("abled/n");
+
+	if ((bool)mod)
+		printf("Remote");
+	else
+		printf("Stream");
+	printf(" Mode\n");
+
+	printf("Left button")
+	if ((bool)lb)
+		printf(" ");
+	else
+		printf(" not ");
+	printf("pressed/n");
+
+	printf("Right button")
+	if ((bool)rb)
+		printf(" ");
+	else
+		printf(" not ");
+	printf("pressed/n");
+
+	printf("Middle button")
+	if ((bool)mb)
+		printf(" ");
+	else
+		printf(" not ");
+	printf("pressed/n");
+
+	printf("Scaling set to ");
+	if ((bool)sca)
+		printf("1:1/n");
+	else
+		printf("2:1/n");
+
+	printf("Resolution type: %i units per mm/n", res);
+
+	printf("Sample rate: %i Hz/n", smp);
+}
+
 
 int test_packet(unsigned short cnt){
 	int ipc_status, r, irq_ms;
@@ -151,7 +234,12 @@ int test_async(unsigned short idle_time) {
 }
 	
 int test_config(void) {
-    /* To be completed ... */
+	ms_subscribe_int();
+	int rb, mb, lb, sca, sta, mod, res, smp;
+	set_config_values(rb, mb, lb, sca, sta, mod, res, smp);
+	print_config(rb, mb, lb, sca, sta, mod, res, smp);
+
+	return 0;
 }	
 	
 int test_gesture(short length, unsigned short tolerance) {
