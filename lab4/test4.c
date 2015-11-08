@@ -101,11 +101,14 @@ int test_async(unsigned short idle_time) {
 	MS_to_KBD_Commands(0xEA);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
-	if (irq_ms== -1)
+	if (irq_timer == -1 || irq_ms== -1)
 		return 1;
 
 	irq_ms = BIT(irq_ms);
-	while (1) {  //Interrupt loop
+	irq_timer = BIT(irq_timer);
+
+	while (!time_flag) {  //Interrupt loop
+
 		/* Get a request message. */
 		r = driver_receive(ANY, &msg, &ipc_status);
 		if (r != 0) {
@@ -116,11 +119,18 @@ int test_async(unsigned short idle_time) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_ms) {
+					time_counter = 0;
 					ms_int_handler(&byte_counter, &packet[byte_counter]);
 
 					if (byte_counter == 3) {
 						byte_counter = 0;
 						print_packet();
+					}
+
+					if (msg.NOTIFY_ARG & irq_timer) {
+						time_counter++;
+						if (time_counter > idle_time * 60)
+							time_flag = true;
 					}
 					break;
 				}
@@ -133,7 +143,7 @@ int test_async(unsigned short idle_time) {
 		}
 	}
 
-
+	timer_unsubscribe_int();
 	MS_to_KBD_Commands(MS_DSB_STREAM_M);
 	if (ms_unsubscribe_int() != 0)
 		return 1;
