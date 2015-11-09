@@ -26,24 +26,21 @@ void packet_order(void) {
 		if (((packet[1] & BIT(3)) >> 3) == 1) {
 			packet[0] = packet_tmp[1];
 			packet[1] = packet_tmp[2];
-			packet[2] = packet_tmp[0];
+			byte_counter = 2;
 		} else if (((packet[2] & BIT(3)) >> 3) == 1) {
 			packet[0] = packet_tmp[2];
-			packet[1] = packet_tmp[0];
-			packet[2] = packet_tmp[1];
+			byte_counter = 1;
 		}
 	}
 }
 
 void print_packet(void) {
 
-	//packet_order();
-
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
 
-	yov = (packet[0] & BIT(7)) >> 7;
-	xov = (packet[0] & BIT(6)) >> 6;
+	yov = (packet[0] & BIT(7)) >> 3;
+	xov = (packet[0] & BIT(6)) >> 2;
 	mb = (packet[0] & BIT(2)) >> 2;
 	rb = (packet[0] & BIT(1)) >> 1;
 	lb = (packet[0] & BIT(0));
@@ -192,7 +189,6 @@ int test_async(unsigned short idle_time) {
 
 	byte_counter = 0; //keep track of byte number
 
-	irq_ms = BIT(irq_ms);
 	MS_to_KBD_Commands(MS_SET_STR_MODE);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
@@ -213,6 +209,11 @@ int test_async(unsigned short idle_time) {
 		if (is_ipc_notify(ipc_status)) { /* received notification */
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_timer) {
+					time_counter++;
+					if (time_counter > idle_time * 60)
+						time_flag = true;
+				}
 				if (msg.NOTIFY_ARG & irq_ms) {
 					time_counter = 0;
 					if (ms_int_handler() == -1) {
@@ -226,11 +227,6 @@ int test_async(unsigned short idle_time) {
 						print_packet();
 					}
 
-					if (msg.NOTIFY_ARG & irq_timer) {
-						time_counter++;
-						if (time_counter > idle_time * 60)
-							time_flag = true;
-					}
 				}
 				break;
 			default:
@@ -336,14 +332,13 @@ int test_gesture(short length, unsigned short tolerance) {
 	message msg;
 	irq_ms = ms_subscribe_int();
 
-	int counter = 0;
 	int vertical_length = 0;
 	int horizontal_length = 0;
 	byte_counter = 0; //keep track of byte number
 
 	MS_to_KBD_Commands(MS_SET_STR_MODE);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
-
+	irq_ms = BIT(irq_ms);
 	while (!vertical_line_flag) {
 		r = driver_receive(ANY, &msg, &ipc_status);
 
@@ -361,30 +356,30 @@ int test_gesture(short length, unsigned short tolerance) {
 					}
 
 					if (byte_counter == 3) {
+						packet_order();
 						byte_counter = 0;
-						counter++;
 						print_packet();
+
+						if (packet[0] & BIT(1)) { //Right button has been pressed
+							horizontal_length += (int)packet[1];
+							vertical_length += (int)packet[2];
+						} else { //Right button has been released
+							horizontal_length = 0;
+							vertical_length = 0;
+						}
+						if (abs(vertical_length) >= length) { //Vertical line with desired length drawn
+							vertical_line_flag = true;
+							printf(
+									"\nYou have done the required vertical line with the right button pressed.\n");
+						}
+
+						else if (abs(horizontal_length) >= tolerance) { //if true, the movement isn't considered vertical
+							vertical_length = 0;
+							horizontal_length = 0;
+						}
 					}
 				}
 
-				if (packet[0] & BIT(1)) { //Right button has been pressed
-					horizontal_length += packet[1];
-					vertical_length += packet[2];
-				} else { //Right button has been released
-					horizontal_length = 0;
-					vertical_length = 0;
-				}
-
-				if (abs(vertical_length) >= length) { //Vertical line with desired length drawn
-					vertical_line_flag = true;
-					printf(
-							"\nYou have done the required vertical line with the right button pressed.\n");
-				}
-
-				else if (abs(horizontal_length) >= tolerance) { //if true, the movement isn't considered vertical
-					vertical_length = 0;
-					horizontal_length = 0;
-				}
 				break;
 			default:
 				break;
