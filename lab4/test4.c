@@ -18,15 +18,18 @@ int ms_int_handler() {
 }
 
 void print_packet(void) {
+
 	char packet_tmp[3];
-	packet_tmp = packet;
+	packet_tmp[0] = packet[0];
+	packet_tmp[1] = packet[1];
+	packet_tmp[2] = packet[2];
 	if (((packet[0] & BIT(3)) >> 3) == 0) {
 		if (((packet[1] & BIT(3)) >> 3) == 1) {
 			packet[0] = packet_tmp[1];
 			packet[1] = packet_tmp[2];
 			packet[2] = packet_tmp[0];
 		}
-		else if (((packet[1] & BIT(3)) >> 3) == 1) {
+		else if (((packet[2] & BIT(3)) >> 3) == 1) {
 			packet[0] = packet_tmp[2];
 			packet[1] = packet_tmp[0];
 			packet[2] = packet_tmp[1];
