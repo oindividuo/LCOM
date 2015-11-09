@@ -3,12 +3,12 @@
 
 static char packet[3];
 
-void print_packtet(void) {
+void print_packet(void) {
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
 
 	yov = (packet[0] & BIT(7)) >> 7;
-	xov = (packet[0] & BIY(6)) >> 6;
+	xov = (packet[0] & BIT(6)) >> 6;
 	mb = (packet[0] & BIT(2)) >> 2;
 	rb = (packet[0] & BIT(1)) >> 1;
 	lb = (packet[0] & BIT(0));
@@ -75,7 +75,7 @@ void set_config_values(int rb, int mb, int lb, int sca, int sta, int mod, int re
 
 void print_config(int rb, int mb, int lb, int sca, int sta, int mod, int res, int smp) {
 
-	printf("/nConfiguration/n")
+	printf("/nConfiguration/n");
 
 	if ((bool)sta)
 		printf("En");
@@ -89,21 +89,21 @@ void print_config(int rb, int mb, int lb, int sca, int sta, int mod, int res, in
 		printf("Stream");
 	printf(" Mode\n");
 
-	printf("Left button")
+	printf("Left button");
 	if ((bool)lb)
 		printf(" ");
 	else
 		printf(" not ");
 	printf("pressed/n");
 
-	printf("Right button")
+	printf("Right button");
 	if ((bool)rb)
 		printf(" ");
 	else
 		printf(" not ");
 	printf("pressed/n");
 
-	printf("Middle button")
+	printf("Middle button");
 	if ((bool)mb)
 		printf(" ");
 	else
