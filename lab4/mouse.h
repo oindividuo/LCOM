@@ -12,7 +12,7 @@
 #define OBF BIT(0)
 #define IBF BIT(1)
 
-int ms_subscribe_int(void );
+int ms_subscribe_int(void);
 int ms_unsubscribe_int();
 int ms_read();
 int ms_write(unsigned char port, unsigned char command);

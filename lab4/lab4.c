@@ -31,7 +31,7 @@ static void print_usage(char *argv[]) {
 					"\t service run %s -args \"async <idle_time>\" - display the packets received from the mouse but now with timer \n"
 					"\t service run %s -args \"config \" - displays the configuration of the mouse \n"
 					"\t service run %s -args \"gesture <length> <tolerance> \" - display the packets received from the mouse with vertical line as exit condition \n",
-			argv[0], argv[0], argv[0], argv[0] );
+			argv[0], argv[0], argv[0], argv[0]);
 }
 
 static int proc_args(int argc, char *argv[]) {
@@ -42,8 +42,7 @@ static int proc_args(int argc, char *argv[]) {
 	/* check the function to test: if the first characters match, accept it */
 	if (strncmp(argv[1], "packet", strlen("packet")) == 0) {
 		if (argc != 3) {
-			printf(
-					"mouse: wrong no of arguments for test of test_packet() \n");
+			printf("mouse: wrong no of arguments for test of test_packet() \n");
 			return 1;
 		}
 		if ((cnt = parse_ulong(argv[2], 10)) == ULONG_MAX)
@@ -51,9 +50,8 @@ static int proc_args(int argc, char *argv[]) {
 		printf("mouse:: test_packet(%d)\n", cnt);
 		return test_packet(cnt);
 	} else if (strncmp(argv[1], "async", strlen("async")) == 0) {
-		if (argc != 3 ) {
-			printf(
-					"mouse: wrong no of arguments for test of test_async() \n");
+		if (argc != 3) {
+			printf("mouse: wrong no of arguments for test of test_async() \n");
 			return 1;
 		}
 

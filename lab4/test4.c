@@ -14,7 +14,6 @@ int ms_int_handler() {
 
 	packet[byte_counter] = (unsigned int) byte;
 	byte_counter += 1;
-	printf("\nalterou packet\n");
 	return 0;
 }
 

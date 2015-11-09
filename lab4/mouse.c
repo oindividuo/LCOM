@@ -42,32 +42,31 @@ int ms_read() {
 }
 
 int ms_write(unsigned char port, unsigned char command) {
-unsigned long stat;
-while (1) {
-	/* loop while 8042 input buffer is not empty */
-	if (sys_inb(STAT_REG, &stat) != OK)
-		return -1;
+	unsigned long stat;
+	while (1) {
+		/* loop while 8042 input buffer is not empty */
+		if (sys_inb(STAT_REG, &stat) != OK)
+			return -1;
 
-	if ((stat & IBF) == 0) {
-		sys_outb(port, command); /* no args command */
-		return 0;
+		if ((stat & IBF) == 0) {
+			sys_outb(port, command); /* no args command */
+			return 0;
+		}
+		tickdelay(micros_to_ticks(DELAY_US));
 	}
-	tickdelay(micros_to_ticks(DELAY_US));
-}
 }
 
 int MS_to_KBD_Commands(unsigned char command) {
-unsigned long byte;
-
-do {
-	ms_write(STAT_REG, MS_WRITE_BYTE); //first write command 0xD4 to the KBC, i.e. using port 0x64
+	unsigned long byte;
 
 	do {
-		ms_write(OUT_BUF, command); // mouse command to port 0x60
-		byte = ms_read(); //acknowledgment (message) in the output buffer
-	} while (byte == MS_NACK); //the latest byte should be written again
+		ms_write(STAT_REG, MS_WRITE_BYTE); //first write command 0xD4 to the KBC, i.e. using port 0x64
 
-} while (byte == MS_ERROR);
+		do {
+			ms_write(OUT_BUF, command); // mouse command to port 0x60
+			byte = ms_read(); //acknowledgment (message) in the output buffer
+		} while (byte == MS_NACK); //the latest byte should be written again
+
+	} while (byte == MS_ERROR);
 }
-
 
