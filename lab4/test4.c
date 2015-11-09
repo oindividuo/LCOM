@@ -9,7 +9,7 @@ int ms_int_handler() {
 	long byte;
 	byte = ms_read();
 	if (byte == -1) {
-		return 1;
+		return -1;
 	}
 
 	packet[byte_counter] = (unsigned int) byte;
@@ -18,6 +18,21 @@ int ms_int_handler() {
 }
 
 void print_packet(void) {
+	char packet_tmp[3];
+	packet_tmp = packet;
+	if (((packet[0] & BIT(3)) >> 3) == 0) {
+		if (((packet[1] & BIT(3)) >> 3) == 1) {
+			packet[0] = packet_tmp[1];
+			packet[1] = packet_tmp[2];
+			packet[2] = packet_tmp[0];
+		}
+		else if (((packet[1] & BIT(3)) >> 3) == 1) {
+			packet[0] = packet_tmp[2];
+			packet[1] = packet_tmp[0];
+			packet[2] = packet_tmp[1];
+		}
+	}
+
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
 
@@ -27,6 +42,9 @@ void print_packet(void) {
 	rb = (packet[0] & BIT(1)) >> 1;
 	lb = (packet[0] & BIT(0));
 
+	dy = abs(packet[2]);
+
+	/*
 	if ((packet[0] & BIT(5)) != 0) {
 		//absolute value of a negative number in 2's complement
 		dy = ~(0xFF & packet[2]);
@@ -34,7 +52,11 @@ void print_packet(void) {
 		dy = ~(0xFF & dy);
 	} else
 		dy = packet[2];
+	*/
 
+	dx = abs(packet[1]);
+
+	/*
 	if ((packet[0] & BIT(4)) != 0) {
 		//absolute value of a negative number in 2's complement
 		dx = ~(0xFF & packet[1]);
@@ -42,6 +64,7 @@ void print_packet(void) {
 		dx = ~(0xFF & dx);
 	} else
 		dx = packet[1];
+	*/
 
 	printf("B1=0x%X	B2=0x%X	B3=0x%X ", packet[0], packet[1], packet[2]);
 	printf("LB=%u ", lb);
@@ -108,7 +131,6 @@ int test_packet(unsigned short cnt) {
 	int ipc_status, r, irq_ms;
 	message msg;
 	irq_ms = ms_subscribe_int();
-	packet[3]; //to store the packet bytes
 	byte_counter = 0; //keep track of byte number
 	int counter = 0;
 	if (irq_ms == -1)
@@ -128,7 +150,7 @@ int test_packet(unsigned short cnt) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_ms) {
-					if (ms_int_handler() == 1) {
+					if (ms_int_handler() == -1) {
 						printf("\nint_handler() erro\n");
 						break;
 					}
@@ -186,7 +208,7 @@ int test_async(unsigned short idle_time) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_ms) {
 					time_counter = 0;
-					if (ms_int_handler() == 1) {
+					if (ms_int_handler() == -1) {
 						printf("\nMouse int handler erro\n");
 						break;
 					}
@@ -312,7 +334,7 @@ int test_gesture(short length, unsigned short tolerance) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_ms) {
-					if (ms_int_handler() == 1) {
+					if (ms_int_handler() == -1) {
 						printf("\nMouse int handler erro\n");
 						break;
 					}
