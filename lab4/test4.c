@@ -37,7 +37,7 @@ void packet_order(void) {
 
 void print_packet(void) {
 
-	packet_order();
+	//packet_order();
 
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
@@ -51,26 +51,26 @@ void print_packet(void) {
 	dy = abs(packet[2]);
 
 	/*
-	if ((packet[0] & BIT(5)) != 0) {
-		//absolute value of a negative number in 2's complement
-		dy = ~(0xFF & packet[2]);
-		dy += 1;
-		dy = ~(0xFF & dy);
-	} else
-		dy = packet[2];
-	*/
+	 if ((packet[0] & BIT(5)) != 0) {
+	 //absolute value of a negative number in 2's complement
+	 dy = ~(0xFF & packet[2]);
+	 dy += 1;
+	 dy = ~(0xFF & dy);
+	 } else
+	 dy = packet[2];
+	 */
 
 	dx = abs(packet[1]);
 
 	/*
-	if ((packet[0] & BIT(4)) != 0) {
-		//absolute value of a negative number in 2's complement
-		dx = ~(0xFF & packet[1]);
-		dx += 1;
-		dx = ~(0xFF & dx);
-	} else
-		dx = packet[1];
-	*/
+	 if ((packet[0] & BIT(4)) != 0) {
+	 //absolute value of a negative number in 2's complement
+	 dx = ~(0xFF & packet[1]);
+	 dx += 1;
+	 dx = ~(0xFF & dx);
+	 } else
+	 dx = packet[1];
+	 */
 
 	printf("B1=0x%X	B2=0x%X	B3=0x%X ", packet[0], packet[1], packet[2]);
 	printf("LB=%u ", lb);
@@ -162,6 +162,7 @@ int test_packet(unsigned short cnt) {
 					}
 
 					if (byte_counter == 3) {
+						packet_order();
 						byte_counter = 0;
 						counter++;
 						print_packet();
@@ -220,6 +221,7 @@ int test_async(unsigned short idle_time) {
 					}
 
 					if (byte_counter == 3) {
+						packet_order();
 						byte_counter = 0;
 						print_packet();
 					}
@@ -249,54 +251,67 @@ int test_async(unsigned short idle_time) {
 int test_config(void) {
 	int irq_ms = 0;
 	irq_ms = ms_subscribe_int();
+	ms_int_handler();
 	MS_to_KBD_Commands(0xEA);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
 	int error = 0;
 	int rb, mb, lb, sca, sta, mod, res;
 	unsigned smp;
-	char c1, c2;
-	c1 = ms_read();
-	c2 = c1;
-	if (c1 == -1) {
+	char c1[3], c2[3];
+	c1[0] = ms_read();
+	c1[1] = ms_read();
+	c1[2] = ms_read();
+
+	c2[0] = c1[0];
+	c2[1] = c1[1];
+	c2[2] = c1[2];
+	if (((c1[0] & BIT(3)) >> 3) == 0) {
+		if (((c1[1] & BIT(3)) >> 3) == 1) {
+			c1[0] = c2[1];
+			c1[1] = c2[2];
+			c1[2] = c2[0];
+		} else if (((c1[2] & BIT(3)) >> 3) == 1) {
+			c1[0] = c2[2];
+			c1[1] = c2[0];
+			c1[2] = c2[1];
+		}
+	}
+
+	if (c1[0] == -1) {
 		error = 1;
 		printf("Can't read from mouse (1st try)\n");
 	}
 
-	rb = BIT(0) & c1;
-	mb = (BIT(1) & c1) >> 1;
-	lb = (BIT(2) & c1) >> 2;
-	sca = (BIT(4) & c1) >> 4;
-	sta = (BIT(5) & c1) >> 5;
-	mod = (BIT(6) & c1) >> 6;
+	rb = BIT(0) & c1[0];
+	mb = (BIT(1) & c1[0]) >> 1;
+	lb = (BIT(2) & c1[0]) >> 2;
+	sca = (BIT(4) & c1[0]) >> 4;
+	sta = (BIT(5) & c1[0]) >> 5;
+	mod = (BIT(6) & c1[0]) >> 6;
 
-	c2 = ms_read();
-	c1 = c2;
-	if (c1 == -1) {
+	if (c1[1] == -1) {
 		error = 1;
 		printf("Can't read from mouse (2nd try)\n");
 	}
 
-	if ((int) c1 >= 8)
+	if ((int) c1[1] >= 8)
 		res = 8;
-	else if ((int) c1 >= 4)
+	else if ((int) c1[1] >= 4)
 		res = 4;
-	else if ((int) c1 >= 2)
+	else if ((int) c1[1] >= 2)
 		res = 2;
-	else if ((int) c1 >= 1)
+	else if ((int) c1[1] >= 1)
 		res = 1;
 
-	c2 = ms_read();
-	c1 = c2;
-	if (c1 == -1) {
+	if (c1[2] == -1) {
 		error = 1;
 		printf("Can't read from mouse (3rd try)\n");
 	}
+	smp = c1[2];
 
 	if (error != 0)
 		return error;
-
-	smp = c1;
 
 	/*//set values for testing
 	 rb = 1;
