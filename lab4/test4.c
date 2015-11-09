@@ -1,8 +1,8 @@
 #include "test4.h"
 #include "timer.h"
 
-static char packet[3];
-int byte_counter;
+static char packet[3]; //to store the packet bytes
+int byte_counter;//keep track of byte number
 
 int ms_int_handler() {
 
@@ -163,8 +163,7 @@ int test_async(unsigned short idle_time) {
 	irq_ms = ms_subscribe_int();
 	irq_timer = timer_subscribe_int();
 
-	char packet[3]; //to store the packet bytes
-	int byte_counter = 0; //keep track of byte number
+	byte_counter = 0; //keep track of byte number
 
 	irq_ms = BIT(irq_ms);
 	MS_to_KBD_Commands(0xEA);
@@ -189,7 +188,10 @@ int test_async(unsigned short idle_time) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_ms) {
 					time_counter = 0;
-					ms_int_handler(&byte_counter, &packet[byte_counter]);
+					if (ms_int_handler() == 1) {
+						printf("\nMouse int handler erro\n");
+						break;
+					}
 
 					if (byte_counter == 3) {
 						byte_counter = 0;
@@ -201,8 +203,8 @@ int test_async(unsigned short idle_time) {
 						if (time_counter > idle_time * 60)
 							time_flag = true;
 					}
-					break;
 				}
+				break;
 			default:
 				break; /* no other notifications expected: do nothing */
 			}
@@ -296,8 +298,7 @@ int test_gesture(short length, unsigned short tolerance) {
 	int counter = 0;
 	int vertical_length = 0;
 	int horizontal_length = 0;
-	char packet[3]; //to store the packet bytes
-	int byte_counter = 0; //keep track of byte number
+	byte_counter = 0; //keep track of byte number
 
 	MS_to_KBD_Commands(0xEA);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
@@ -313,7 +314,10 @@ int test_gesture(short length, unsigned short tolerance) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_ms) {
-					ms_int_handler(&byte_counter, &packet[byte_counter]);
+					if (ms_int_handler() == 1) {
+						printf("\nMouse int handler erro\n");
+						break;
+					}
 
 					if (byte_counter == 3) {
 						byte_counter = 0;
@@ -341,14 +345,11 @@ int test_gesture(short length, unsigned short tolerance) {
 					}
 				}
 				break;
-
 			default:
 				break;
 			}
-
 		} else {
 		}
-
 	}
 
 	MS_to_KBD_Commands(MS_DSB_STREAM_M);
