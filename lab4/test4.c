@@ -17,8 +17,7 @@ int ms_int_handler() {
 	return 0;
 }
 
-void print_packet(void) {
-
+void packet_order(void) {
 	char packet_tmp[3];
 	packet_tmp[0] = packet[0];
 	packet_tmp[1] = packet[1];
@@ -28,13 +27,17 @@ void print_packet(void) {
 			packet[0] = packet_tmp[1];
 			packet[1] = packet_tmp[2];
 			packet[2] = packet_tmp[0];
-		}
-		else if (((packet[2] & BIT(3)) >> 3) == 1) {
+		} else if (((packet[2] & BIT(3)) >> 3) == 1) {
 			packet[0] = packet_tmp[2];
 			packet[1] = packet_tmp[0];
 			packet[2] = packet_tmp[1];
 		}
 	}
+}
+
+void print_packet(void) {
+
+	packet_order();
 
 	unsigned mb, lb, rb, xov, yov;
 	short dx, dy;
@@ -140,7 +143,7 @@ int test_packet(unsigned short cnt) {
 		return 1;
 
 	irq_ms = BIT(irq_ms);
-	MS_to_KBD_Commands(0xEA);
+	MS_to_KBD_Commands(MS_SET_STR_MODE);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
 	while (counter < cnt) {  //Interrupt loop
@@ -189,7 +192,7 @@ int test_async(unsigned short idle_time) {
 	byte_counter = 0; //keep track of byte number
 
 	irq_ms = BIT(irq_ms);
-	MS_to_KBD_Commands(0xEA);
+	MS_to_KBD_Commands(MS_SET_STR_MODE);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
 	if (irq_timer == -1 || irq_ms == -1)
@@ -323,7 +326,7 @@ int test_gesture(short length, unsigned short tolerance) {
 	int horizontal_length = 0;
 	byte_counter = 0; //keep track of byte number
 
-	MS_to_KBD_Commands(0xEA);
+	MS_to_KBD_Commands(MS_SET_STR_MODE);
 	MS_to_KBD_Commands(MS_DATA_PACKETS);
 
 	while (!vertical_line_flag) {

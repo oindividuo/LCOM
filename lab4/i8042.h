@@ -56,8 +56,8 @@
 #define MS_WRITE		0x60	//Write Command Byte
 #define MS_CHECK_ITF    0xA9	//Check Mouse Interface
 #define MS_WRITE_BYTE	0xD4	//Write Byte to Mouse
-#define MS_ENABLE		0xA8	//Disable Mouse
-#define MS_DISABLE		0xA7	//Enable Mouse
+#define MS_ENABLE		0xA8	//Enable Mouse
+#define MS_DISABLE		0xA7	//disable Mouse
 #define MS_ACK          0xFA    //Reset
 #define MS_NACK         0xFE    //Resend
 #define MS_ERROR        0xFC    //second consecutive invalid byte
