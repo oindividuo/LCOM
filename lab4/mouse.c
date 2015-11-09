@@ -34,10 +34,7 @@ int ms_read() {
 		if (stat & OBF) {
 
 			sys_inb(OUT_BUF, &key);
-			if ((stat & (PAR_ERR | TO_ERR)) == 0)
-				return key;
-			else
-				return -1;
+			return key;
 		}
 		tickdelay(micros_to_ticks(DELAY_US));
 		i++;

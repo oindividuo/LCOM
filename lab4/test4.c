@@ -2,20 +2,20 @@
 #include "timer.h"
 
 static char packet[3]; //to store the packet bytes
-int byte_counter;//keep track of byte number
+int byte_counter; //keep track of byte number
 
 int ms_int_handler() {
 
-long byte;
-byte = ms_read();
-if (byte == 1) {
-	return 1;
-}
+	long byte;
+	byte = ms_read();
+	if (byte == -1) {
+		return 1;
+	}
 
-packet[byte_counter] = (unsigned int) byte;
-byte_counter += 1;
-printf("\nalterou packet\n");
-return 0;
+	packet[byte_counter] = (unsigned int) byte;
+	byte_counter += 1;
+	printf("\nalterou packet\n");
+	return 0;
 }
 
 void print_packet(void) {
@@ -129,8 +129,7 @@ int test_packet(unsigned short cnt) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_ms) {
-					if (ms_int_handler()
-							== 1) {
+					if (ms_int_handler() == 1) {
 						printf("\nint_handler() erro\n");
 						break;
 					}
@@ -324,25 +323,25 @@ int test_gesture(short length, unsigned short tolerance) {
 						counter++;
 						print_packet();
 					}
+				}
 
-					if (packet[0] & BIT(1)) { //Right button has been pressed
-						horizontal_length += packet[1];
-						vertical_length += packet[2];
-					} else { //Right button has been released
-						horizontal_length = 0;
-						vertical_length = 0;
-					}
+				if (packet[0] & BIT(1)) { //Right button has been pressed
+					horizontal_length += packet[1];
+					vertical_length += packet[2];
+				} else { //Right button has been released
+					horizontal_length = 0;
+					vertical_length = 0;
+				}
 
-					if (abs(vertical_length) >= length) { //Vertical line with desired length drawn
-						vertical_line_flag = true;
-						printf(
-								"\nYou have done the required vertical line with the right button pressed.\n");
-					}
+				if (abs(vertical_length) >= length) { //Vertical line with desired length drawn
+					vertical_line_flag = true;
+					printf(
+							"\nYou have done the required vertical line with the right button pressed.\n");
+				}
 
-					else if (abs(horizontal_length) >= tolerance) { //if true, the movement isn't considered vertical
-						vertical_length = 0;
-						horizontal_length = 0;
-					}
+				else if (abs(horizontal_length) >= tolerance) { //if true, the movement isn't considered vertical
+					vertical_length = 0;
+					horizontal_length = 0;
 				}
 				break;
 			default:
