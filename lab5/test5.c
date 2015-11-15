@@ -45,9 +45,43 @@ void *test_init(unsigned short mode, unsigned short delay) {
 
 
 int test_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color) {
+	int ipc_status, r, irq_set = 0;
+	bool break_code_flag = false;
+	unsigned long key;
+	message msg;
 	
-	/* To be completed */
 	
+
+	irq_set = kbd_subscribe_int();
+	irq_set = BIT(irq_set);
+	while (!break_code_flag) {  //Interrupt loop
+		/* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+		if (r != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set) {
+					key = kbd_interrupt_handler_read();
+					if (key == ESC_BREAK)
+						break_code_flag = true;
+				}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+	}
+	if (kdb_unsubscribe_int() != 0)
+		return 1;
+	if (vg_exit() != 0)
+		return 1;
+	return 0;
 }
 
 int test_line(unsigned short xi, unsigned short yi, 
