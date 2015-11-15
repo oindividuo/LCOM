@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define VBE_MODE_INFO 0x4F01
+#define SET_VBE_MODE  0x4F02
+#define VIDEO_BIOS    0x10
+
 /** @defgroup vbe vbe
  * @{
  *

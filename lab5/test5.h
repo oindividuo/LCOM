@@ -1,6 +1,14 @@
 #ifndef __TEST5_H
 #define __TEST5_H
 
+#include <minix/drivers.h>
+#include <minix/com.h>
+#include <minix/sysutil.h>
+#include <minix/syslib.h>
+#include "stdbool.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 /** @defgroup lab5 lab5
  * @{
  *

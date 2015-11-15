@@ -42,3 +42,24 @@ int vg_exit() {
   } else
       return 0;
 }
+
+void *vg_init(unsigned short mode){
+	struct reg86u r;
+	r.u.w.ax = SET_VBE_MODE; // VBE call, function 02 -- set VBE mode
+	r.u.w.bx = 1 << 14 | mode; // set bit 14: linear framebuffer with mode passed as arg
+	r.u.b.intno = VIDEO_BIOS;
+	if (sys_int86(&r) != OK) {
+		printf("set_vbe_mode: sys_int86() failed \n");
+		return ;
+	}
+
+	vbe_mode_info_t video_mode_info;
+	if (vbe_get_mode_info(mode, &video_mode_info) != 0) {
+		printf("\nvbe_get_mode_info error\n");
+		return;
+	}
+
+	h_res = video_mode_info.XResolution;
+	v_res = video_mode_info.YResolution;
+	bits_per_pixel = video_mode_info.BitsPerPixel;
+}
