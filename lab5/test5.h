@@ -8,6 +8,7 @@
 #include "stdbool.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "timer.h"
 
 /** @defgroup lab5 lab5
  * @{
