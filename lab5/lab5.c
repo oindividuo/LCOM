@@ -65,7 +65,7 @@ static int proc_args(int argc, char *argv[]) {
 						parse_ulong(argv[5], 10)) == LONG_MAX))
 			return 1;
 
-		printf("graphics:: test_async(%d, %d, %d, %d) \n", x, y, size, color);
+		printf("graphics:: test_square(%d, %d, %d, %d) \n", x, y, size, color);
 		return test_square(x, y, size, color);
 	} else if (strncmp(argv[1], "config", strlen("config")) == 0) {
 		if (argc != 7) {
