@@ -67,8 +67,8 @@ void *vg_init(unsigned short mode) {
 	struct mem_range mr;
 	/* Allow memory mapping */
 
-	mr.mr_base = (phys_bytes)(video_mode_info.vram_base);
-	mr.mr_limit = mr.mr_base + video_mode_info.vram_size;
+	mr.mr_base = (phys_bytes)(video_mode_info.PhysBasePtr);
+	mr.mr_limit = mr.mr_base + (h_res * v_res) / bits_per_pixel;
 
 	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
 		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", r);
@@ -76,7 +76,7 @@ void *vg_init(unsigned short mode) {
 	/* Map memory */
 
 	video_mem = vm_map_phys(SELF, (void *) mr.mr_base,
-			video_mode_info.vram_size);
+			(h_res * v_res) / bits_per_pixel);
 
 	if (video_mem == MAP_FAILED)
 		panic("video_txt couldn't map video memory");
