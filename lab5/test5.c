@@ -65,9 +65,13 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 			{
 				if (vg_set_pixel(i, j, color) != 0)
 					return 1;
-				j++;
+				if (i == xf)
+					j++;
 			}
-			i++;
+			if (i == xf)
+				i = 0;
+			else
+				i++;
 		}
 		r = driver_receive(ANY, &msg, &ipc_status);
 		if (r != 0) {

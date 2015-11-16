@@ -89,12 +89,12 @@ int vg_set_pixel(unsigned int x, unsigned int y, char color) {
 //Para test_square, é suposto interromper com ESC, mesmo que o quadrado nao esteja acabado. Esta função acaba por ser inutil por essa razao
 int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width, unsigned long height, unsigned long color)
 {
-	unsigned long xf = x + width, yf = y + height;
+	unsigned long i, j, xf = x + width, yf = y + height;
 	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
 		return 1;
-	for (unsigned long i = x; i < xf; ++i)
+	for (i = x; i < xf; ++i)
 	{
-		for (unsigned long j = y; j < yf; ++j)
+		for (j = y; j < yf; ++j)
 		{
 			if (vg_set_pixel(i, j, color) != 0)
 				return 1;
