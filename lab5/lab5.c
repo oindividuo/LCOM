@@ -43,8 +43,9 @@ static int proc_args(int argc, char *argv[]) {
 			printf("graphics: wrong no of arguments for test of test_init() \n");
 			return 1;
 		}
-		if ((mode = parse_ulong(argv[2], 10)) == ULONG_MAX || ((delay =
-				parse_ulong(argv[2], 10)) == ULONG_MAX))
+		if ((mode = parse_ulong(argv[2], 10)) == ULONG_MAX)
+			return 1;
+		if ((delay = parse_ulong(argv[3], 10)) == ULONG_MAX)
 			return 1;
 
 		printf("graphics:: test_init(%d, %d)\n", mode, delay);
@@ -57,9 +58,9 @@ static int proc_args(int argc, char *argv[]) {
 		}
 
 		if ((x = parse_ulong(argv[2], 10)) == LONG_MAX || ((y =
-				parse_ulong(argv[2], 10)) == LONG_MAX) || ((size =
-				parse_ulong(argv[2], 10)) == LONG_MAX) || ((color =
-				parse_ulong(argv[2], 10)) == LONG_MAX))
+				parse_ulong(argv[3], 10)) == LONG_MAX) || ((size =
+				parse_ulong(argv[4], 10)) == LONG_MAX) || ((color =
+				parse_ulong(argv[5], 10)) == LONG_MAX))
 			return 1;
 
 		printf("graphics:: test_async(%d, %d, %d, %d) \n", x, y, size, color);
@@ -71,10 +72,10 @@ static int proc_args(int argc, char *argv[]) {
 		}
 
 		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX ||
-				((yi = parse_ulong(argv[2], 10)) == LONG_MAX) ||
-				((xf = parse_ulong(argv[2], 10)) == LONG_MAX) ||
-				((yf = parse_ulong(argv[2], 10)) == LONG_MAX) ||
-			    ((color = parse_ulong(argv[2], 10)) == LONG_MAX))
+				((yi = parse_ulong(argv[3], 10)) == LONG_MAX) ||
+				((xf = parse_ulong(argv[4], 10)) == LONG_MAX) ||
+				((yf = parse_ulong(argv[5], 10)) == LONG_MAX) ||
+			    ((color = parse_ulong(argv[6], 10)) == LONG_MAX))
 		return 1;
 
 		printf("graphics:: test_line(%d, %d, %d, %d, %d)\n", xi, yi, xf, yf,

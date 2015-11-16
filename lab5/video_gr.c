@@ -80,8 +80,8 @@ unsigned get_v_res(){
 }
 
 int vg_set_pixel(unsigned int x, unsigned int y, char color) {
-	if (x > h_res || y > v_res)
-		return 1;
+	//if (x > h_res || y > v_res)
+		//return 1;
 	*(video_mem + x + (y * h_res)) = color;
 	return 0;
 }

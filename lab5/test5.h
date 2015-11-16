@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include "timer.h"
 #include "kbd.h"
+#include "video_gr.h"
+#include "vbe.h"
 
 /** @defgroup lab5 lab5
  * @{
