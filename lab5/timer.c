@@ -181,3 +181,43 @@ int timer_test_config(unsigned long timer){
 		return 1;
 	return 0;
 }
+
+int timer_delay(unsigned short delay){
+	int ipc_status, r;
+	time_counter = 0;
+	message msg;
+	int irq_set = 0;
+	irq_set = timer_subscribe_int();
+	if (irq_set == -1)
+		return 1;
+	irq_set = BIT(irq_set);
+
+	while (time_counter < delay * 60) {  //Interrupt loop
+		/* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+		if (r != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set)
+					timer_int_handler();
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+	}
+
+
+	if (timer_unsubscribe_int() == -1){
+		printf("\nError while unsubscribing timer\n");
+		return 1;
+	}
+	return 0;
+
+}

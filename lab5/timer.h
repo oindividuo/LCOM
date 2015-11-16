@@ -96,4 +96,9 @@ int timer_test_int(unsigned long time);
  */
 int timer_test_config(unsigned long timer);
 
+/**
+ * function that wait "delay" seconds
+ */
+int timer_delay(unsigned short delay);
+
 #endif /* __TIMER_H */
