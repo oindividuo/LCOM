@@ -63,3 +63,42 @@ void *vg_init(unsigned short mode){
 	v_res = video_mode_info.YResolution;
 	bits_per_pixel = video_mode_info.BitsPerPixel;
 }
+
+char* get_video_mem(){
+
+	return video_mem;
+}
+
+unsigned get_h_res(){
+
+	return h_res;
+}
+
+unsigned get_v_res(){
+
+	return v_res;
+}
+
+int vg_set_pixel(unsigned int x, unsigned int y, char color) {
+	if (x > h_res || y > v_res)
+		return 1;
+	*(video_mem + x + (y * h_res)) = color;
+	return 0;
+}
+
+//Para test_square, é suposto interromper com ESC, mesmo que o quadrado nao esteja acabado. Esta função acaba por ser inutil por essa razao
+int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width, unsigned long height, unsigned long color)
+{
+	unsigned long xf = x + width, yf = y + height;
+	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
+		return 1;
+	for (unsigned long i = x; i < xf; ++i)
+	{
+		for (unsigned long j = y; j < yf; ++j)
+		{
+			if (vg_set_pixel(i, j, color) != 0)
+				return 1;
+		}
+	}
+	return 0;
+}

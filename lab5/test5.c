@@ -50,12 +50,25 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 	unsigned long key;
 	message msg;
 	
-	
+	unsigned short i = x, j = y, xf = x + size, yf = y + size;
+	unsigned h_res = get_h_res(), v_res = get_v_res();
+	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
+		return 1;
 
 	irq_set = kbd_subscribe_int();
 	irq_set = BIT(irq_set);
 	while (!break_code_flag) {  //Interrupt loop
 		/* Get a request message. */
+		if (i <= xf)
+		{
+			if (j <= yf)
+			{
+				if (vg_set_pixel(i, j, color) != 0)
+					return 1;
+				j++;
+			}
+			i++;
+		}
 		r = driver_receive(ANY, &msg, &ipc_status);
 		if (r != 0) {
 			printf("driver_receive failed with: %d", r);
