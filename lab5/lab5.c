@@ -40,7 +40,8 @@ static int proc_args(int argc, char *argv[]) {
 	/* check the function to test: if the first characters match, accept it */
 	if (strncmp(argv[1], "init", strlen("init")) == 0) {
 		if (argc != 4) {
-			printf("graphics: wrong no of arguments for test of test_init() \n");
+			printf(
+					"graphics: wrong no of arguments for test of test_init() \n");
 			return 1;
 		}
 		if ((mode = parse_ulong(argv[2], 10)) == ULONG_MAX)
@@ -53,30 +54,32 @@ static int proc_args(int argc, char *argv[]) {
 		return 0;
 	} else if (strncmp(argv[1], "square", strlen("square")) == 0) {
 		if (argc != 6) {
-			printf("graphics: wrong no of arguments for test of test_square() \n");
+			printf(
+					"graphics: wrong no of arguments for test of test_square() \n");
 			return 1;
 		}
 
-		if ((x = parse_ulong(argv[2], 10)) == LONG_MAX || ((y =
-				parse_ulong(argv[3], 10)) == LONG_MAX) || ((size =
-				parse_ulong(argv[4], 10)) == LONG_MAX) || ((color =
-				parse_ulong(argv[5], 10)) == LONG_MAX))
+		if ((x = parse_ulong(argv[2], 10)) == LONG_MAX
+				|| ((y = parse_ulong(argv[3], 10)) == LONG_MAX) || ((size =
+						parse_ulong(argv[4], 10)) == LONG_MAX) || ((color =
+						parse_ulong(argv[5], 10)) == LONG_MAX))
 			return 1;
 
 		printf("graphics:: test_async(%d, %d, %d, %d) \n", x, y, size, color);
 		return test_square(x, y, size, color);
 	} else if (strncmp(argv[1], "config", strlen("config")) == 0) {
 		if (argc != 7) {
-			printf("graphics: wrong no of arguments for test of test_line() \n");
+			printf(
+					"graphics: wrong no of arguments for test of test_line() \n");
 			return 1;
 		}
 
-		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX ||
-				((yi = parse_ulong(argv[3], 10)) == LONG_MAX) ||
-				((xf = parse_ulong(argv[4], 10)) == LONG_MAX) ||
-				((yf = parse_ulong(argv[5], 10)) == LONG_MAX) ||
-			    ((color = parse_ulong(argv[6], 10)) == LONG_MAX))
-		return 1;
+		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX
+				|| ((yi = parse_ulong(argv[3], 10)) == LONG_MAX) || ((xf =
+						parse_ulong(argv[4], 10)) == LONG_MAX) || ((yf =
+						parse_ulong(argv[5], 10)) == LONG_MAX) || ((color =
+						parse_ulong(argv[6], 10)) == LONG_MAX))
+			return 1;
 
 		printf("graphics:: test_line(%d, %d, %d, %d, %d)\n", xi, yi, xf, yf,
 				color);

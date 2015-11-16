@@ -20,28 +20,28 @@
  */
 void *vg_init(unsigned short mode);
 
- /**
+/**
  * @brief Returns to default Minix 3 text mode (0x03: 25 x 80, 16 colors)
  * 
  * @return 0 upon success, non-zero upon failure
  */
 int vg_exit(void);
 
- /**
+/**
  * @brief Returns video memory address
  *
  * @return Video memory address
  */
 char* get_video_mem(void);
 
- /**
+/**
  * @brief Returns horizontal resolution static variable
  *
  * @return Horizontal resolution
  */
 unsigned get_h_res(void);
 
- /**
+/**
  * @brief Returns vertical resolution static variable
  *
  * @return Vertical resolution
@@ -59,9 +59,9 @@ unsigned get_v_res(void);
  * @param color new pixel color
  * @return 0 on success, non-zero otherwise
  */
- int vg_set_pixel(unsigned int x, unsigned int y, char color);
+int vg_set_pixel(unsigned int x, unsigned int y, char color);
 
- /**
+/**
  * @brief Changes the color of a rectangular area to the input value
  *
  * Sets the color of all the pixels within the specified limits to the input value,
@@ -74,8 +74,9 @@ unsigned get_v_res(void);
  * @param new area color
  * @return 0 on success, non-zero otherwise
  */
- int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width, unsigned long height, unsigned long color);
+int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width,
+		unsigned long height, unsigned long color);
 
- /** @} end of video_gr */
- 
+/** @} end of video_gr */
+
 #endif /* __VIDEO_GR_H */
