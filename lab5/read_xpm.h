@@ -17,4 +17,4 @@
  *   char *sprite = read_xpm(pic1, &wd, &hg);
  * </pre>
 */
-char *read_xpm(char *map[], int *width, int *height);
+char *read_xpm(char *map[], int *width, int *height, unsigned short h_res, unsigned short v_res);
