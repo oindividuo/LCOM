@@ -12,6 +12,8 @@
 #include "kbd.h"
 #include "video_gr.h"
 #include "vbe.h"
+#include "read_xpm.h"
+#include "pixmap.h"
 
 /** @defgroup lab5 lab5
  * @{

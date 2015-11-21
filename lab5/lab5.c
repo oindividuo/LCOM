@@ -93,7 +93,7 @@ static int proc_args(int argc, char *argv[]) {
 	} else if (strncmp(argv[1], "xpm", strlen("xpm")) == 0) {
 		if (argc != 5) {
 			printf(
-					"graphics: wrong no of arguments for test of test_line() \n");
+					"graphics: wrong no of arguments for test of test_xmp() \n");
 			return 1;
 		}
 
