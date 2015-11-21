@@ -15,6 +15,7 @@
  * Better run my version of lab5 as follows:
  *     service run `pwd`/lab5 -args "mode 0x105"
  */
+
 #define VRAM_PHYS_ADDR	0xF0000000
 #define H_RES             1024
 #define V_RES		  768
@@ -45,14 +46,14 @@ int vg_exit() {
 
 void *vg_init(unsigned short mode) {
 	struct reg86u r;
-	/*r.u.w.ax = SET_VBE_MODE; // VBE call, function 02 -- set VBE mode
+	 r.u.w.ax = SET_VBE_MODE; // VBE call, function 02 -- set VBE mode
 	 r.u.w.bx = 1 << 14 | mode; // set bit 14: linear framebuffer with mode passed as arg
 	 r.u.b.intno = VIDEO_BIOS;
 	 if (sys_int86(&r) != OK) {
 	 printf("set_vbe_mode: sys_int86() failed \n");
 	 return;
 	 }
-	 */
+
 
 	vbe_mode_info_t video_mode_info;
 	if (vbe_get_mode_info(mode, &video_mode_info) != 0) {
@@ -68,22 +69,20 @@ void *vg_init(unsigned short mode) {
 	/* Allow memory mapping */
 
 	mr.mr_base = (phys_bytes)(video_mode_info.PhysBasePtr);
-	mr.mr_limit = mr.mr_base + (h_res * v_res) / bits_per_pixel;
+	mr.mr_limit = mr.mr_base + (h_res * v_res*bits_per_pixel)/8;
 
-	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
+	if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr))
 		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", r);
 
 	/* Map memory */
 
 	video_mem = vm_map_phys(SELF, (void *) mr.mr_base,
-			(h_res * v_res) / bits_per_pixel);
+			(h_res * v_res*bits_per_pixel)/8);
 
 	if (video_mem == MAP_FAILED)
 		panic("video_txt couldn't map video memory");
 
 	return video_mem;
-
-	printf("RES: %d, %d, %d\n", h_res, v_res, bits_per_pixel);
 }
 
 char* get_video_mem() {
@@ -102,22 +101,22 @@ unsigned get_v_res() {
 }
 
 int vg_set_pixel(unsigned int x, unsigned int y, char color) {
-	//if (x > h_res || y > v_res)
-	//return 1;
-	*(video_mem + x + (y * h_res)) = color;
+	if(x < 0 || y < 0)
+		return 1;
+
+	*(video_mem + (x + y * h_res) * bits_per_pixel / 8) = color;
 	return 0;
 }
 
-//Para test_square, é suposto interromper com ESC, mesmo que o quadrado nao esteja acabado. Esta função acaba por ser inutil por essa razao
-int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width,
-		unsigned long height, unsigned long color) {
-	unsigned long i, j, xf = x + width, yf = y + height;
+int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, unsigned long color) {
+	unsigned long i, j, xf = x + size, yf = y + size;
+
 	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
 		return 1;
+
 	for (i = x; i < xf; ++i) {
 		for (j = y; j < yf; ++j) {
-			if (vg_set_pixel(i, j, color) != 0)
-				return 1;
+			vg_set_pixel(i, j, color);
 		}
 	}
 	return 0;

@@ -86,3 +86,49 @@ int kbd_Toogle_Leds(unsigned long led_state){
 
 		return 0;
 }
+
+int kbd_scan(unsigned long key_code) {
+	int ipc_status, r, irq_set = 0, two_byte = false;
+	bool break_code_flag = false;
+	unsigned long key;
+	message msg;
+	irq_set = kbd_subscribe_int();
+	irq_set = BIT(irq_set);
+	while (!break_code_flag) {  //Interrupt loop
+		/* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+		if (r != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set) {
+						key = kbd_interrupt_handler_read();
+						if (key == 0xE0) {
+							two_byte = true;
+						} else if (two_byte == true) {
+							key |= 0xE0 << 8;
+							two_byte = false;
+							if (key == key_code)
+								break_code_flag = true;
+						} else {
+							if (key == key_code)
+								break_code_flag = true;
+						}
+					}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+	}
+	if (kdb_unsubscribe_int() != 0) //in order to use Minix 3 virtual terminals
+		return 1;
+
+	return 0;
+}
+
