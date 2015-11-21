@@ -69,13 +69,10 @@ int vg_set_pixel(unsigned int x, unsigned int y, char color);
  *
  * @param x horizontal position, 0 < x < h_res
  * @param y vertical position, 0 < y < v_res
- * @param width horizontal size of the rectangle
- * @param height vertical size of the rectangle
  * @param new area color
  * @return 0 on success, non-zero otherwise
  */
-int vg_draw_rectangle(unsigned long x, unsigned long y, unsigned long width,
-		unsigned long height, unsigned long color);
+int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, unsigned long color);
 
 /** @} end of video_gr */
 

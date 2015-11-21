@@ -26,8 +26,11 @@ void *test_init(unsigned short mode, unsigned short delay) {
 int test_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color) {
 	vg_init(GRAPHICS_MODE);
 	
-	if(vg_draw_rectangle(x, y, size, color, 3))
+	if (vg_draw_rectangle(x, y, size, color) != 0) {
+		if (vg_exit() != 0)
+			return 1;
 		return 1;
+	}
 
     kbd_scan(ESC_BREAK); // this function only finish when the key passed as argument is pressed
 
