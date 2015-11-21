@@ -129,27 +129,25 @@ int vg_draw_line(unsigned short xi, unsigned short yi,
 		return 1;
 
 	 //Digital Differential Analyzer (DDA) algorithm
-	 //difference between two end points
-	int x = xi, y = yi;
-	int steps;
-	int Xinc;
-	int Yinc;
-	int dx = xf - xi;
-	int dy = yf - yi;
+	float x, y, steps, Xinc, Yinc;
+	x = xi, y = yi;
+	float dx = xf - xi;
+	float dy = yf - yi;
 
-	if (dx > dy)
+	if (fabs(dx) > fabs(dy))
 		steps = abs(dx);
 	else {
 		steps = abs(dy);
 	}
 
-	Xinc = dx / (steps);
-	Yinc = dy / (steps);
+	Xinc = dx / steps;
+	Yinc = dy / steps;
+
 	unsigned int i;
 	for (i = 0; i < steps; i++) {
+		vg_set_pixel(x, y, color);
 		x = x + Xinc;
 		y = y + Yinc;
-		vg_set_pixel(x, y, color);
 	}
 
 }
