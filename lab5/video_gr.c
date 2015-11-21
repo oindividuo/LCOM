@@ -86,7 +86,6 @@ void *vg_init(unsigned short mode) {
 }
 
 char* get_video_mem() {
-
 	return video_mem;
 }
 
@@ -149,5 +148,5 @@ int vg_draw_line(unsigned short xi, unsigned short yi,
 		x = x + Xinc;
 		y = y + Yinc;
 	}
-
+	return 0;
 }

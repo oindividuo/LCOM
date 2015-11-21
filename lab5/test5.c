@@ -13,13 +13,12 @@ unsigned short hex_to_dec(unsigned short n) {
 */
 
 void *test_init(unsigned short mode, unsigned short delay) {
-	vg_init(mode);
+ 	char *video_mem;
+	video_mem = vg_init(mode);
     timer_delay(delay);
-	/**
-	 * TODO PRINTF PHYSICAL ADDRESS
-	 */
 	if(vg_exit() != 0)
 		return;
+	printf("\nPhysical VRAM adress: 0x%02x\n", video_mem);
 }
 
 

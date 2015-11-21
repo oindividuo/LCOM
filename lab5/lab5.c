@@ -30,12 +30,18 @@ static void print_usage(char *argv[]) {
 					"\t service run %s -args \"init <mode> <delay>\" - switch the video adapter to the graphics mode specified in its argument \n"
 					"\t service run %s -args \"square <x> <y> <size> <color>\" - change the color of pixels on the screen \n"
 					"\t service run %s -args \"line <xi> <yi> <xf> <yf> <color> \" - draw a line segment on the screen \n",
-			argv[0], argv[0], argv[0]);
+					"\t service run %s -args \"xmp <xi> <yi> <xpm> \" - draw a sprite that is provided as an XPM image \n",
+					"\t service run %s -args \"move <xi> <yi> <xpm> <hor> <delta> <time> \" - move a sprite that is provided as an XPM image \n",
+					"\t service run %s -args \"controller \" - use VBE function 0x0, Return VBE Controller Information \n",
+			argv[0], argv[0], argv[0], argv[0], argv[0], argv[0]);
 }
 
 static int proc_args(int argc, char *argv[]) {
-	unsigned short mode, delay, x, y, size, xi, yi, xf, yf;
+	unsigned short mode, delay, x, y, size, xi, yi, xf, yf, hor, time;
 	unsigned long color;
+	char *xpm;
+	short delta;
+
 
 	/* check the function to test: if the first characters match, accept it */
 	if (strncmp(argv[1], "init", strlen("init")) == 0) {
@@ -76,14 +82,53 @@ static int proc_args(int argc, char *argv[]) {
 
 		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX
 				|| ((yi = parse_ulong(argv[3], 10)) == LONG_MAX) || ((xf =
-						parse_ulong(argv[4], 10)) == LONG_MAX) || ((yf =
-						parse_ulong(argv[5], 10)) == LONG_MAX) || ((color =
-						parse_ulong(argv[6], 10)) == LONG_MAX))
-			return 1;
+								parse_ulong(argv[4], 10)) == LONG_MAX) || ((yf =
+								parse_ulong(argv[5], 10)) == LONG_MAX) || ((color =
+								parse_ulong(argv[6], 10)) == LONG_MAX))
+		return 1;
 
 		printf("graphics:: test_line(%d, %d, %d, %d, %d)\n", xi, yi, xf, yf,
 				color);
 		return test_line(xi, yi, xf, yf, color);
+	} else if (strncmp(argv[1], "xpm", strlen("xpm")) == 0) {
+		if (argc != 5) {
+			printf(
+					"graphics: wrong no of arguments for test of test_line() \n");
+			return 1;
+		}
+
+		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX
+				|| ((yi = parse_ulong(argv[3], 10)) == LONG_MAX))
+		return 1;
+
+		printf("graphics:: test_xpm(%d, %d)\n", xi, yi);
+		return test_xpm(xi, yi, &xpm);
+	} else if (strncmp(argv[1], "move", strlen("move")) == 0) {
+		if (argc != 8) {
+			printf(
+							"graphics: wrong no of arguments for test of test_move() \n");
+			return 1;
+		}
+
+		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX
+				|| ((yi = parse_ulong(argv[3], 10)) == LONG_MAX) || ((hor =
+						parse_ulong(argv[5], 10)) == LONG_MAX) || ((delta =
+						parse_ulong(argv[6], 10)) == LONG_MAX) || ((time =
+						parse_ulong(argv[7], 10)) == LONG_MAX))
+			return 1;
+
+		printf("graphics:: test_move(%d, %d, %d, %d, %d, %d)\n", xi, yi, xf, yf,
+				hor, delta, time);
+		return test_move(xi, yi, &xpm, hor, delta, time);
+	} else if (strncmp(argv[1], "controller", strlen("controller")) == 0) {
+		if (argc != 2) {
+			printf(
+					"graphics: wrong no of arguments for test of test_controller() \n");
+			return 1;
+		}
+
+		printf("graphics:: test_controller()\n");
+		return test_controller();
 	} else {
 		printf("graphics: non valid function \"%s\" to test\n", argv[1]);
 		return 1;
