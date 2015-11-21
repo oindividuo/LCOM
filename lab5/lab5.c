@@ -67,7 +67,7 @@ static int proc_args(int argc, char *argv[]) {
 
 		printf("graphics:: test_square(%d, %d, %d, %d) \n", x, y, size, color);
 		return test_square(x, y, size, color);
-	} else if (strncmp(argv[1], "config", strlen("config")) == 0) {
+	} else if (strncmp(argv[1], "line", strlen("line")) == 0) {
 		if (argc != 7) {
 			printf(
 					"graphics: wrong no of arguments for test of test_line() \n");

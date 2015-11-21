@@ -42,8 +42,20 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 
 int test_line(unsigned short xi, unsigned short yi, 
 		           unsigned short xf, unsigned short yf, unsigned long color) {
-	
-	
+	vg_init(GRAPHICS_MODE);
+
+	if (vg_draw_line(xi, yi, xf, yf, color) != 0) {
+		if (vg_exit() != 0)
+			return 1;
+		return 1;
+	}
+
+	kbd_scan(ESC_BREAK); // this function only finish when the key passed as argument is pressed
+
+	if (vg_exit() != 0)
+		return 1;
+
+	return 0;
 }
 
 int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {

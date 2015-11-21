@@ -114,10 +114,42 @@ int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, u
 	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
 		return 1;
 
-	for (i = x; i < xf; ++i) {
-		for (j = y; j < yf; ++j) {
-			vg_set_pixel(i, j, color);
+	for (i = x; i < xf; i++) {
+		for (j = y; j < yf; j++) {
+			if(vg_set_pixel(i, j, color) != 0)
+		       return 1;
 		}
 	}
 	return 0;
+}
+
+int vg_draw_line(unsigned short xi, unsigned short yi,
+        unsigned short xf, unsigned short yf, unsigned long color){
+	if (xi > h_res || yi > v_res || xf > h_res || yf > v_res)
+		return 1;
+
+	 //Digital Differential Analyzer (DDA) algorithm
+	 //difference between two end points
+	int x = xi, y = yi;
+	int steps;
+	int Xinc;
+	int Yinc;
+	int dx = xf - xi;
+	int dy = yf - yi;
+
+	if (dx > dy)
+		steps = abs(dx);
+	else {
+		steps = abs(dy);
+	}
+
+	Xinc = dx / (steps);
+	Yinc = dy / (steps);
+	unsigned int i;
+	for (i = 0; i < steps; i++) {
+		x = x + Xinc;
+		y = y + Yinc;
+		vg_set_pixel(x, y, color);
+	}
+
 }
