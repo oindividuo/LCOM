@@ -146,9 +146,27 @@ int vg_draw_line(unsigned short xi, unsigned short yi,
 
 	unsigned int i;
 	for (i = 0; i < steps; i++) {
-		vg_set_pixel(x, y, color);
+		if (vg_set_pixel(x, y, color) != 0)
+			return 1;
 		x = x + Xinc;
 		y = y + Yinc;
+	}
+	return 0;
+}
+
+int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsigned short height, char * map[]){
+	unsigned short xf = xi + width;
+	unsigned short yf = yi + height;
+
+	if (xi > h_res || yi > v_res || xf > h_res || yf > v_res)
+		return 1;
+
+	unsigned int i, j, x = 0;
+	for (i = xi; i < xf; i++) {
+		for (j = yi; j < yf; j++, x++) {
+			if (vg_set_pixel(i, j, *map[x]) != 0)
+				return 1;
+		}
 	}
 	return 0;
 }

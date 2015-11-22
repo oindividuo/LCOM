@@ -39,7 +39,7 @@ static void print_usage(char *argv[]) {
 static int proc_args(int argc, char *argv[]) {
 	unsigned short mode, delay, x, y, size, xi, yi, xf, yf, hor, time;
 	unsigned long color;
-	char *xpm;
+	char **xpm;
 	short delta;
 
 
@@ -99,14 +99,28 @@ static int proc_args(int argc, char *argv[]) {
 
 		if ((xi = parse_ulong(argv[2], 10)) == LONG_MAX
 				|| ((yi = parse_ulong(argv[3], 10)) == LONG_MAX))
-		return 1;
+			return 1;
+		if ((strncmp(argv[4], "pic1", strlen("pic1")) == 0))
+			xpm = pic1;
+		else if ((strncmp(argv[4], "pic2", strlen("pic2")) == 0))
+			xpm = pic2;
+		else if ((strncmp(argv[4], "pic3", strlen("pic3")) == 0))
+			xpm = pic3;
+		else if ((strncmp(argv[4], "cross", strlen("cross")) == 0))
+			xpm = cross;
+		else if ((strncmp(argv[4], "penguin", strlen("penguin")) == 0))
+			xpm = penguin;
+		else {
+			printf("\nThe specified xpm was not found\n");
+			return 1;
+		}
 
 		printf("graphics:: test_xpm(%d, %d)\n", xi, yi);
-		return test_xpm(xi, yi, &xpm);
+		return test_xpm(xi, yi, xpm);
 	} else if (strncmp(argv[1], "move", strlen("move")) == 0) {
 		if (argc != 8) {
 			printf(
-							"graphics: wrong no of arguments for test of test_move() \n");
+					"graphics: wrong no of arguments for test of test_move() \n");
 			return 1;
 		}
 
@@ -115,11 +129,10 @@ static int proc_args(int argc, char *argv[]) {
 						parse_ulong(argv[5], 10)) == LONG_MAX) || ((delta =
 						parse_ulong(argv[6], 10)) == LONG_MAX) || ((time =
 						parse_ulong(argv[7], 10)) == LONG_MAX))
-			return 1;
 
-		printf("graphics:: test_move(%d, %d, %d, %d, %d, %d)\n", xi, yi, xf, yf,
-				hor, delta, time);
-		return test_move(xi, yi, &xpm, hor, delta, time);
+			printf("graphics:: test_move(%d, %d, %d, %d, %d, %d)\n", xi, yi, xf,
+					yf, hor, delta, time);
+		return test_move(xi, yi, xpm, hor, delta, time);
 	} else if (strncmp(argv[1], "controller", strlen("controller")) == 0) {
 		if (argc != 2) {
 			printf(

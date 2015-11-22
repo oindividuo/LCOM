@@ -13,10 +13,10 @@ unsigned short hex_to_dec(unsigned short n) {
 */
 
 void *test_init(unsigned short mode, unsigned short delay) {
- 	char *video_mem;
+	char *video_mem;
 	video_mem = vg_init(mode);
-    timer_delay(delay);
-	if(vg_exit() != 0)
+	timer_delay(delay);
+	if (vg_exit() != 0)
 		return;
 	printf("\nPhysical VRAM adress: 0x%02x\n", video_mem);
 }
@@ -31,7 +31,7 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 		return 1;
 	}
 
-    kbd_scan(ESC_BREAK); // this function only finish when the key passed as argument is pressed
+    kbd_scan(ESC_BREAK); // this function only ends when the key passed as argument is pressed
 
 	if (vg_exit() != 0)
 		return 1;
@@ -49,7 +49,7 @@ int test_line(unsigned short xi, unsigned short yi,
 		return 1;
 	}
 
-	kbd_scan(ESC_BREAK); // this function only finish when the key passed as argument is pressed
+	kbd_scan(ESC_BREAK);
 
 	if (vg_exit() != 0)
 		return 1;
@@ -58,9 +58,24 @@ int test_line(unsigned short xi, unsigned short yi,
 }
 
 int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
-	
-	/* To be completed */
-	
+	char *video_mem;
+	video_mem = vg_init(GRAPHICS_MODE);
+
+	int width, height;
+	char * map;
+	map = read_xpm(xpm, &width, &height, get_h_res(), get_v_res());
+	if (vg_draw_xpm(xi, yi, width, height, map) != 0) {
+		if (vg_exit() != 0)
+			return 1;
+		return 1;
+	}
+
+	kbd_scan(ESC_BREAK);
+
+	if (vg_exit() != 0)
+		return 1;
+
+	return 0;
 }	
 
 int test_move(unsigned short xi, unsigned short yi, char *xpm[], 
