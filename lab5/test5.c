@@ -80,9 +80,25 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 
 int test_move(unsigned short xi, unsigned short yi, char *xpm[], 
 				unsigned short hor, short delta, unsigned short time) {
-	
-	/* To be completed */
-	
+	char *video_mem;
+	video_mem = vg_init(GRAPHICS_MODE);
+
+	int width, height;
+	char * map;
+	map = read_xpm(xpm, &width, &height, get_h_res(), get_v_res());
+	if (1) { //TODO Chamar a funçao (e faze-la) vg_move_xpm
+		if (vg_exit() != 0)
+			return 1;
+		return 1;
+	}
+
+
+	kbd_scan(ESC_BREAK);
+
+	if (vg_exit() != 0)
+		return 1;
+
+	return 0;
 }					
 
 int test_controller() {
