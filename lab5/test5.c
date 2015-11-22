@@ -84,9 +84,61 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	video_mem = vg_init(GRAPHICS_MODE);
 
 	Sprite *sp = create_sprite(xpm, xi, yi);
-	draw_sprite(sp);
-	kbd_scan(ESC_BREAK);
+
+	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
+	bool time_flag = false;
+	unsigned long key;
+	message msg;
+	irq_kbd = kbd_subscribe_int();
+	irq_timer = timer_subscribe_int();
+
+	if (irq_timer == -1 || irq_kbd == -1)
+		return 1;
+
+	irq_kbd = BIT(irq_kbd);
+	irq_timer = BIT(irq_timer);
+	while (!time_flag) {  //Interrupt loop
+		/* Get a request message. */
+		r = driver_receive(ANY, &msg, &ipc_status);
+		if (r != 0) {
+			printf("driver_receive failed with: %d", r);
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) { /* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_kbd) {
+					key = kbd_interrupt_handler_read();
+					if (key == ESC_BREAK) {
+						destroy_sprite(sp);
+						timer_unsubscribe_int();
+						if (kdb_unsubscribe_int() != 0)
+							return 1;
+						if (vg_exit() != 0)
+							return 1;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_timer) {
+					time_counter++;
+					vg_clear();
+					animate_sprite(sp); // Todo completar função animate
+					draw_sprite(sp);
+					if (time_counter > time * 60)
+						time_flag = true;
+				}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+	}
+
 	destroy_sprite(sp);
+	timer_unsubscribe_int();
+	if (kdb_unsubscribe_int() != 0)
+		return 1;
 	if (vg_exit() != 0)
 		return 1;
 
