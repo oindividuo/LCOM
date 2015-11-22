@@ -115,9 +115,9 @@ int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, u
 	if (x > h_res || y > v_res || xf > h_res || yf > v_res)
 		return 1;
 
-	for (i = x; i < xf; i++) {
-		for (j = y; j < yf; j++) {
-			if(vg_set_pixel(i, j, color) != 0)
+	for (i = y; i < yf; i++) {
+		for (j = x; j < xf; j++) {
+			if(vg_set_pixel(j, i, color) != 0)
 		       return 1;
 		}
 	}
@@ -154,7 +154,7 @@ int vg_draw_line(unsigned short xi, unsigned short yi,
 	return 0;
 }
 
-int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsigned short height, char * map[]){
+int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsigned short height, char * map){
 	unsigned short xf = xi + width;
 	unsigned short yf = yi + height;
 
@@ -162,9 +162,9 @@ int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsi
 		return 1;
 
 	unsigned int i, j, x = 0;
-	for (i = xi; i < xf; i++) {
-		for (j = yi; j < yf; j++, x++) {
-			if (vg_set_pixel(i, j, *map[x]) != 0)
+	for (i = yi; i < yf; i++) {
+		for (j = xi; j < xf; j++, x++) {
+			if (vg_set_pixel(j, i, map[x]) != 0)
 				return 1;
 		}
 	}
