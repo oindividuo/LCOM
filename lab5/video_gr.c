@@ -171,4 +171,13 @@ int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsi
 	return 0;
 }
 
+void vg_clear() {
+	unsigned int i, j;
+	for (i = 0; i < V_RES; i++) {
+		for (j = 0; j < H_RES; j++) {
+			vg_set_pixel(j, i, 0);
+		}
+	}
+}
+
 

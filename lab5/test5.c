@@ -83,18 +83,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	char *video_mem;
 	video_mem = vg_init(GRAPHICS_MODE);
 
-	int width, height;
-	char * map;
-	map = read_xpm(xpm, &width, &height, get_h_res(), get_v_res());
-	if (1) { //TODO Chamar a funçao (e faze-la) vg_move_xpm
-		if (vg_exit() != 0)
-			return 1;
-		return 1;
-	}
-
-
+	Sprite *sp = create_sprite(xpm, xi, yi);
+	draw_sprite(sp);
 	kbd_scan(ESC_BREAK);
-
+	destroy_sprite(sp);
 	if (vg_exit() != 0)
 		return 1;
 

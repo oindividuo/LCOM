@@ -72,7 +72,6 @@ int vg_set_pixel(unsigned int x, unsigned int y, char color);
  * @param new area color
  * @return 0 on success, non-zero otherwise
  */
-int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, unsigned long color);
 
 /** @} end of video_gr */
 

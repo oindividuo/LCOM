@@ -14,6 +14,7 @@
 #include "vbe.h"
 #include "read_xpm.h"
 #include "pixmap.h"
+#include "sprite.h"
 
 /** @defgroup lab5 lab5
  * @{
