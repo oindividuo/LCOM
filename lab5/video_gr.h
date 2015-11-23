@@ -1,6 +1,11 @@
 #ifndef __VIDEO_GR_H
 #define __VIDEO_GR_H
 
+#define VRAM_PHYS_ADDR		0xF0000000
+#define H_RES           	1024
+#define V_RES		  		768
+#define BITS_PER_PIXEL		8
+
 /** @defgroup video_gr video_gr
  * @{
  *
