@@ -1,16 +1,16 @@
 #include "test5.h"
 
 /*
-unsigned short hex_to_dec(unsigned short n) {
-	unsigned short sum = 0;
-	int i;
-	for (i = 1; i < 8; i++)
-	{
-		sum += (n & BIT(i)) * 16;
-	}
-	return sum;
-}
-*/
+ unsigned short hex_to_dec(unsigned short n) {
+ unsigned short sum = 0;
+ int i;
+ for (i = 1; i < 8; i++)
+ {
+ sum += (n & BIT(i)) * 16;
+ }
+ return sum;
+ }
+ */
 
 void *test_init(unsigned short mode, unsigned short delay) {
 	char *video_mem;
@@ -21,17 +21,17 @@ void *test_init(unsigned short mode, unsigned short delay) {
 	printf("\nPhysical VRAM adress: 0x%02x\n", video_mem);
 }
 
-
-int test_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color) {
+int test_square(unsigned short x, unsigned short y, unsigned short size,
+		unsigned long color) {
 	vg_init(GRAPHICS_MODE);
-	
+
 	if (vg_draw_rectangle(x, y, size, color) != 0) {
 		if (vg_exit() != 0)
 			return 1;
 		return 1;
 	}
 
-    kbd_scan(ESC_BREAK); // this function only ends when the key passed as argument is pressed
+	kbd_scan(ESC_BREAK); // this function only ends when the key passed as argument is pressed
 
 	if (vg_exit() != 0)
 		return 1;
@@ -39,8 +39,8 @@ int test_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 	return 0;
 }
 
-int test_line(unsigned short xi, unsigned short yi, 
-		           unsigned short xf, unsigned short yf, unsigned long color) {
+int test_line(unsigned short xi, unsigned short yi, unsigned short xf,
+		unsigned short yf, unsigned long color) {
 	vg_init(GRAPHICS_MODE);
 
 	if (vg_draw_line(xi, yi, xf, yf, color) != 0) {
@@ -76,15 +76,15 @@ int test_xpm(unsigned short xi, unsigned short yi, char *xpm[]) {
 		return 1;
 
 	return 0;
-}	
+}
 
-int test_move(unsigned short xi, unsigned short yi, char *xpm[], 
-				unsigned short hor, short delta, unsigned short time) {
+int test_move(unsigned short xi, unsigned short yi, char *xpm[],
+		unsigned short hor, short delta, unsigned short time) {
 	char *video_mem;
 	video_mem = vg_init(GRAPHICS_MODE);
 
 	Sprite *sp = create_sprite(xpm, xi, yi);
-
+	float velx = 5, vely = 0;
 	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
 	bool time_flag = false;
 	unsigned long key;
@@ -98,7 +98,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	irq_kbd = BIT(irq_kbd);
 	irq_timer = BIT(irq_timer);
 	while (!time_flag) {  //Interrupt loop
-		/* Get a request message. */
+	/* Get a request message. */
 		r = driver_receive(ANY, &msg, &ipc_status);
 		if (r != 0) {
 			printf("driver_receive failed with: %d", r);
@@ -112,19 +112,21 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 					if (key == ESC_BREAK) {
 						destroy_sprite(sp);
 						timer_unsubscribe_int();
-						if (kdb_unsubscribe_int() != 0)
-							return 1;
 						if (vg_exit() != 0)
 							return 1;
+						if (kdb_unsubscribe_int() != 0)
+							return 1;
+
+						return 0;
 					}
 				}
 				if (msg.NOTIFY_ARG & irq_timer) {
 					time_counter++;
-					vg_clear();
-					animate_sprite(sp); // Todo completar função animate
-					draw_sprite(sp);
-					if (time_counter > time * 60)
+					animate_sprite(sp, velx, vely);
+					if (time_counter > time * 60) {
 						time_flag = true;
+						destroy_sprite(sp);
+					}
 				}
 				break;
 			default:
@@ -135,15 +137,14 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		}
 	}
 
-	destroy_sprite(sp);
 	timer_unsubscribe_int();
-	if (kdb_unsubscribe_int() != 0)
-		return 1;
 	if (vg_exit() != 0)
+		return 1;
+	if (kdb_unsubscribe_int() != 0)
 		return 1;
 
 	return 0;
-}					
+}
 
 int test_controller() {
-}					
+}

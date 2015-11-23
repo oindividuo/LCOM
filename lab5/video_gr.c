@@ -124,35 +124,46 @@ int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, u
 	return 0;
 }
 
-int vg_draw_line(unsigned short xi, unsigned short yi,
-        unsigned short xf, unsigned short yf, unsigned long color){
+int vg_draw_line(unsigned short xi, unsigned short yi, unsigned short xf,
+		unsigned short yf, unsigned long color) {
 	if (xi > h_res || yi > v_res || xf > h_res || yf > v_res)
 		return 1;
 
-	 //Digital Differential Analyzer (DDA) algorithm
+	//Digital Differential Analyzer (DDA) algorithm
 	float x, y, steps, Xinc, Yinc;
 	x = xi, y = yi;
 	float dx = xf - xi;
 	float dy = yf - yi;
-
-	if (fabs(dx) > fabs(dy))
-		steps = abs(dx);
-	else {
-		steps = abs(dy);
-	}
-
-	Xinc = dx / steps;
-	Yinc = dy / steps;
-
 	unsigned int i;
-	for (i = 0; i < steps; i++) {
-		if (vg_set_pixel(x, y, color) != 0)
-			return 1;
-		x = x + Xinc;
-		y = y + Yinc;
+
+	if (yf == yi) {
+		for (i = 0; i < abs(dx); i++) {
+			if (vg_set_pixel(x, y, color) != 0)
+				return 1;
+			x = x + 1;
+		}
+	} else {
+		if (fabs(dx) > fabs(dy))
+			steps = abs(dx);
+		else {
+			steps = abs(dy);
+		}
+
+		Xinc = dx / steps;
+		Yinc = dy / steps;
+
+		unsigned int i;
+		for (i = 0; i < steps; i++) {
+			if (vg_set_pixel(x, y, color) != 0)
+				return 1;
+			x = x + Xinc;
+			y = y + Yinc;
+		}
 	}
 	return 0;
 }
+
+
 
 int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsigned short height, char * map){
 	unsigned short xf = xi + width;

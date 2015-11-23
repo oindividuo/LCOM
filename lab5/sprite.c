@@ -20,7 +20,7 @@ Sprite *create_sprite(char * pic[], unsigned short xi, unsigned short yi) {
 	return sp;
 }
 
-void delete_sprite(Sprite * sp) {
+int delete_sprite(Sprite * sp) {
 	unsigned short xf = sp->x + sp->width;
 	unsigned short yf = sp->y + sp->height;
 
