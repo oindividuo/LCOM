@@ -68,8 +68,8 @@ int check_collision(Sprite * sp) {
 
 int animate_sprite(Sprite *fig, float velx, float vely){
 	clear_sprite(fig);
-	fig->xspeed = (int)velx;
-	fig->yspeed = (int)vely;
+	fig->xspeed = velx;
+	fig->yspeed = vely;
 	fig->x += fig->xspeed;
 	fig->y += fig->yspeed;
 	return draw_sprite(fig);

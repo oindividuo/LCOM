@@ -86,9 +86,11 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	Sprite *sp = create_sprite(xpm, xi, yi);
 	float velx = 0, vely = 0;
 	if (hor) {
-		velx = delta / time*60;
+		velx = delta;
+		velx /= time*60;
 	} else {
-		vely = delta / time*60;
+		vely = delta;
+		vely /= time * 60;
 	}
 	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
 	bool time_flag = false;
