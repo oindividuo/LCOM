@@ -86,11 +86,21 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	Sprite *sp = create_sprite(xpm, xi, yi);
 	float velx = 0, vely = 0;
 	if (hor) {
+		if (delta + xi > 1024 || delta + xi < 0) {
+			if (vg_exit() != 0)
+				return 1;
+			return 1;
+		}
 		velx = delta;
-		velx /= time*60;
+		velx /= (time * 60);
 	} else {
+		if (delta + yi > 768 || delta + xi < 0) {
+			if (vg_exit() != 0)
+				return 1;
+			return 1;
+		}
 		vely = delta;
-		vely /= time * 60;
+		vely /= (time * 60);
 	}
 	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
 	bool time_flag = false;
@@ -105,7 +115,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	irq_kbd = BIT(irq_kbd);
 	irq_timer = BIT(irq_timer);
 	while (!time_flag) {  //Interrupt loop
-	/* Get a request message. */
+		/* Get a request message. */
 		r = driver_receive(ANY, &msg, &ipc_status);
 		if (r != 0) {
 			printf("driver_receive failed with: %d", r);
