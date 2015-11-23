@@ -20,6 +20,24 @@ Sprite *create_sprite(char * pic[], unsigned short xi, unsigned short yi) {
 	return sp;
 }
 
+void delete_sprite(Sprite * sp) {
+	unsigned short xf = sp->x + sp->width;
+	unsigned short yf = sp->y + sp->height;
+
+	if (sp->x > get_h_res() || sp->y > get_v_res() || xf > get_h_res()
+			|| yf > get_v_res())
+		return 1;
+
+	unsigned int i, j, x = 0;
+	for (i = sp->y; i < yf; i++) {
+		for (j = sp->x; j < xf; j++, x++) {
+			if (vg_set_pixel(j, i, 0) != 0)
+				return 1;
+		}
+	}
+	return 0;
+}
+
 void destroy_sprite(Sprite * sp) {
 	if (sp == NULL)
 		return;
