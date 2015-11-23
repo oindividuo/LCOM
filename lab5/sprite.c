@@ -20,7 +20,7 @@ Sprite *create_sprite(char * pic[], unsigned short xi, unsigned short yi) {
 	return sp;
 }
 
-int delete_sprite(Sprite * sp) {
+int clear_sprite(Sprite * sp) {
 	unsigned short xf = sp->x + sp->width;
 	unsigned short yf = sp->y + sp->height;
 
@@ -66,5 +66,11 @@ int draw_sprite(Sprite * sp){
 int check_collision(Sprite * sp) {
 }
 
-int animate_sprite(Sprite *fig){
+int animate_sprite(Sprite *fig, float velx, float vely){
+	clear_sprite(fig);
+	fig->xspeed = (int)velx;
+	fig->yspeed = (int)vely;
+	fig->x += fig->xspeed;
+	fig->y += fig->yspeed;
+	return draw_sprite(fig);
 }
