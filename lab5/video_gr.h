@@ -72,6 +72,13 @@ int vg_set_pixel(unsigned int x, unsigned int y, char color);
  * @param new area color
  * @return 0 on success, non-zero otherwise
  */
+ int vg_draw_rectangle(unsigned short x, unsigned short y, unsigned short size, unsigned long color);
+
+ int vg_draw_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color);
+
+ int vg_draw_xpm(unsigned short xi, unsigned short yi, unsigned short width, unsigned short height, char * map);
+
+ void vg_clear();
 
 /** @} end of video_gr */
 
