@@ -134,32 +134,32 @@ int vg_draw_line(unsigned short xi, unsigned short yi, unsigned short xf,
 	x = xi, y = yi;
 	float dx = xf - xi;
 	float dy = yf - yi;
+	float m = dy / dx;
 	unsigned int i;
 
-	if (yf == yi) {
-		for (i = 0; i < abs(dx); i++) {
-			if (vg_set_pixel(x, y, color) != 0)
-				return 1;
-			x = x + 1;
-		}
-	} else {
+	if (m > 1) {
 		if (fabs(dx) > fabs(dy))
 			steps = abs(dx);
-		else {
+		else
 			steps = abs(dy);
-		}
-
-		Xinc = dx / steps;
-		Yinc = dy / steps;
-
-		unsigned int i;
-		for (i = 0; i < steps; i++) {
-			if (vg_set_pixel(x, y, color) != 0)
-				return 1;
-			x = x + Xinc;
-			y = y + Yinc;
-		}
 	}
+	else {
+		if (fabs(dy) > fabs(dx))
+			steps = abs(dy);
+		else
+			steps = abs(dx);
+	}
+
+	Xinc = dx / steps;
+	Yinc = dy / steps;
+
+	for (i = 0; i < steps; i++) {
+		if (vg_set_pixel(x, y, color) != 0)
+			return 1;
+		x = x + Xinc;
+		y = y + Yinc;
+	}
+
 	return 0;
 }
 
