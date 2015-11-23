@@ -50,7 +50,7 @@ static int proc_args(int argc, char *argv[]) {
 					"graphics: wrong no of arguments for test of test_init() \n");
 			return 1;
 		}
-		if ((mode = parse_ulong(argv[2], 10)) == ULONG_MAX)
+		if ((mode = parse_ulong(argv[2], 16)) == ULONG_MAX)
 			return 1;
 		if ((delay = parse_ulong(argv[3], 10)) == ULONG_MAX)
 			return 1;

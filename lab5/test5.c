@@ -1,23 +1,12 @@
 #include "test5.h"
 
-/*
- unsigned short hex_to_dec(unsigned short n) {
- unsigned short sum = 0;
- int i;
- for (i = 1; i < 8; i++)
- {
- sum += (n & BIT(i)) * 16;
- }
- return sum;
- }
- */
 
 void *test_init(unsigned short mode, unsigned short delay) {
 	char *video_mem;
 	video_mem = vg_init(mode);
 	timer_delay(delay);
 	if (vg_exit() != 0)
-		return;
+		return NULL;
 	printf("\nPhysical VRAM adress: 0x%02x\n", video_mem);
 }
 
