@@ -84,7 +84,12 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	video_mem = vg_init(GRAPHICS_MODE);
 
 	Sprite *sp = create_sprite(xpm, xi, yi);
-	float velx = 5, vely = 0;
+	float velx = 0, vely = 0;
+	if (hor) {
+		velx = delta / time*60;
+	} else {
+		vely = delta / time*60;
+	}
 	int ipc_status, r, irq_kbd = 0, irq_timer = 0, time_counter = 0;
 	bool time_flag = false;
 	unsigned long key;
