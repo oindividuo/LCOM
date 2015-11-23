@@ -81,33 +81,6 @@ typedef struct {
 
 /** @} end of vbe_mode_info_t*/
 
-
-/** @name VBE Mode Info Block */
-/**@{
- *
- * Packed VBE Mode Info Block
- */
-
-typedef struct {
-	char VbeSignature[4];			/* VBE signature */
-	uint16_t VbeVersion;			/* VBE Version */
-	phys_bytes OemStringPtr;		/* pointer to OEM String */
-	uint32_t Capabilities;			/* capabilities of graphics controller */
-	phys_bytes VideoModePtr;		/* pointer to VideoModeList */
-	uint16_t TotalMemory;			/* number of 64kb memory blocks */
-
-	/* Added for VBE 2.0 */
-	uint16_t OemSoftwareRev;		/* VBE implementation Software revision */
-	phys_bytes OemVendorNamePtr;	/* pointer to Vendor Name String */
-	phys_bytes OemProductNamePtr;	/* pointer to Product Name String */
-	phys_bytes OemProductRevPtr;	/* pointer to Product Revision String */
-	uint8_t Reserved[222];			/* reserved for VBE implementation scratch area */
-	uint8_t OemData[256];			/* Data Area for OEM Strings */
-} __attribute__((packed)) vbe_info_block_t;
-
-/** @} end of vbe_info_block_t*/
-
-
 /**
  * @brief Returns information on the input VBE mode, including screen dimensions, color depth and VRAM physical address
  * 
@@ -121,9 +94,5 @@ typedef struct {
  * @return 0 on success, non-zero otherwise
  */
 int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p);
-
-
-int vbe_get_info_block(vbe_info_block_t *vib_p, uint16_t **video_modes, unsigned *num_video_modes);
- /** @} end of vbe */
 
 #endif /* __VBE_H */
