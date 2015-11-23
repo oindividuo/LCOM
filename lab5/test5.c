@@ -86,7 +86,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	Sprite *sp = create_sprite(xpm, xi, yi);
 	float velx = 0, vely = 0;
 	if (hor) {
-		if (delta + xi > 1024 || delta + xi < 0) {
+		if (delta + xi > H_RES || delta + xi < 0 || xi > H_RES) {
 			if (vg_exit() != 0)
 				return 1;
 			return 1;
@@ -94,7 +94,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 		velx = delta;
 		velx /= (time * 60);
 	} else {
-		if (delta + yi > 768 || delta + xi < 0) {
+		if (delta + yi > V_RES || delta + xi < 0 || yi > V_RES) {
 			if (vg_exit() != 0)
 				return 1;
 			return 1;
